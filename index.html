@@ -1,87 +1,108 @@
-<!DOCTYPE html>
-<html lang="it">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>🏠 CasaComune</title>
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
-<link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css"/>
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-<script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
-<style>
-*{margin:0;padding:0;box-sizing:border-box;font-family:-apple-system,BlinkMacSystemFont,sans-serif}
-.h{background:#111;color:#fff;padding:14px 16px;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:999}
-#map{height:62vh;width:100%}
-.bar{padding:10px;display:flex;gap:8px;background:#f5f5f5}
-.bar input,.bar select{flex:1;padding:12px;border-radius:10px;border:1px solid #ddd;font-size:16px}
-.btn{padding:12px 16px;background:#111;color:#fff;border-radius:10px;border:0}
-#list{padding:10px;display:grid;gap:8px;max-height:38vh;overflow:auto;background:#fff}
-.card{padding:12px;border:1px solid #eee;border-radius:12px;display:flex;justify-content:space-between}
-#status{text-align:center;padding:6px;background:#fffbe6;font-size:13px}
-</style>
-</head>
-<body>
-<div class="h"><div><b>🏠 CasaComune</b> <small>Italia</small></div><div id="count">...</div></div>
-<div id="status">Carico comuni...</div>
-<div class="bar">
-<input id="q" placeholder="Cerca comune... es. Binasco" oninput="searchQ(this.value)">
-<select id="reg" onchange="filt(this.value)"><option value="">Tutte regioni</option></select>
-<button class="btn" onclick="goB()">📍</button>
+DOCTYPE html>
+<html lang="it"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CasaComune - Segnala Guasto</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>body{font-family:-apple-system,BlinkMacSystemFont}</style></head>
+<body class="bg-gray-100 pb-20">
+<div class="bg-black text-white p-4 sticky top-0 z-50 flex justify-between items-center">
+<b>🏠 CasaComune - GUASTI</b><div class="flex gap-2">
+<button onclick="showTab('segnala')" id="b1" class="bg-white text-black px-3 py-1 rounded-full text-sm font-bold">SEGNALA</button>
+<button onclick="showTab('comune')" id="b2" class="bg-zinc-700 px-3 py-1 rounded-full text-sm">COMUNE</button>
+</div></div>
+
+<!-- TAB SEGNALA -->
+<div id="tab-segnala" class="p-4 max-w-lg mx-auto">
+<div class="bg-white rounded-2xl p-5 shadow">
+<h2 class="font-bold text-lg mb-3">📍 Nuova Segnalazione</h2>
+<label class="text-xs font-bold">COMUNE (7904)</label>
+<select id="comune" class="w-full p-3 border rounded-xl mb-3 bg-white"></select>
+<input id="via" placeholder="Via, civico, scala - es. Via Roma 12 scala B" class="w-full p-3 border rounded-xl mb-3">
+<select id="tipo" class="w-full p-3 border rounded-xl mb-3">
+<option>Finestra rotta</option><option>Porta rotta</option><option>Caldaia / Riscaldamento</option><option>Perdita acqua</option><option>Muffa / Infiltrazione</option><option>Elettrico / Luce</option><option>Ascensore</option><option>Altro</option>
+</select>
+<textarea id="desc" placeholder="Descrivi il guasto..." class="w-full p-3 border rounded-xl mb-3 h-24"></textarea>
+<label class="text-xs font-bold">FOTO GUASTO</label>
+<input type="file" id="foto" accept="image/*" class="w-full mb-3 text-sm">
+<img id="preview" class="hidden w-full rounded-xl mb-3 h-48 object-cover">
+<input id="nome" placeholder="Tuo nome" class="w-full p-3 border rounded-xl mb-3">
+<input id="tel" placeholder="Tuo telefono" class="w-full p-3 border rounded-xl mb-4">
+
+<button onclick="invia()" class="w-full bg-black text-white p-4 rounded-xl font-bold text-lg">INVIA SEGNALAZIONE 🚀</button>
+<p class="text-xs text-center mt-3 text-gray-500">Verrà inviata al Comune che poi la gira al tecnico</p>
 </div>
-<div id="map"></div>
-<div id="list"></div>
+<div id="ok" class="hidden mt-4 bg-green-600 text-white p-4 rounded-xl text-center">
+<b>✅ Inviata!</b><br><div id="oktxt" class="text-sm mt-2"></div>
+<a id="waLink" target="_blank" class="block mt-3 bg-white text-green-700 p-3 rounded-xl font-bold">APRI WHATSAPP AL COMUNE</a>
+</div>
+</div>
+
+<!-- TAB COMUNE -->
+<div id="tab-comune" class="hidden p-4 max-w-lg mx-auto">
+<div class="bg-white rounded-2xl p-4 shadow mb-4">
+<h2 class="font-bold">👨‍💼 Dashboard Comune</h2>
+<p class="text-xs text-gray-500">Qui vedi tutte le segnalazioni degli inquilini. Clicchi e le inoltri al tecnico.</p>
+<div class="flex gap-2 mt-3">
+<input id="filtroComune" placeholder="Filtra per comune" class="flex-1 p-2 border rounded-lg text-sm">
+<input id="numTecnico" value="39" placeholder="Numero tecnico (es 39333...)" class="flex-1 p-2 border rounded-lg text-sm">
+</div>
+</div>
+<div id="lista" class="grid gap-3"></div>
+</div>
 
 <script>
-const map=L.map('map').setView([41.9,12.5],5.5);
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19}).addTo(map);
-const cl=L.markerClusterGroup({chunkedLoading:true}).addTo(map);
-let DATA=[], VIEW=[];
+let COMUNI=[]; let SEGNALAZIONI = JSON.parse(localStorage.getItem('casacomune_segnalazioni')||'[]');
+const el=s=>document.getElementById(s);
 
-async function load(){
- try{
-  let comuniNomi = await fetch('https://raw.githubusercontent.com/matteocontrini/comuni-json/master/comuni.json').then(r=>r.json());
-  DATA = comuniNomi.map(c=>{
-    let reg = c.regione?.nome || c.regione || "Lombardia";
-    let lat = c.coordinate? c.coordinate.lat : (c.lat || 0);
-    let lng = c.coordinate? c.coordinate.lng : (c.lng || c.lon || 0);
-    if(!lat){
-      let base={Lombardia:[45.5,9.5],Lazio:[41.9,12.5],Sicilia:[37.5,14],Campania:[40.8,14.3],Veneto:[45.6,11.8],Piemonte:[45,7.8]};
-      let b=base[reg]||[41.9,12.5];
-      lat=b[0]+(Math.random()-0.5)*1.5; lng=b[1]+(Math.random()-0.5)*2;
-    }
-    return [c.nome, c.sigla||c.provincia?.sigla||"", reg, lat, lng];
-  });
-  document.getElementById('status').innerText = DATA.length+" comuni caricati";
-  initReg(); render(DATA);
- }catch(e){
-  document.getElementById('status').innerText = "Modalità offline";
-  let fallback=[["Binasco","MI","Lombardia",45.33,9.10],["Milano","MI","Lombardia",45.46,9.19],["Roma","RM","Lazio",41.89,12.49],["Napoli","NA","Campania",40.85,14.26]];
-  DATA=fallback; render(DATA);
- }
+async function init(){
+ let j=await fetch('https://raw.githubusercontent.com/matteocontrini/comuni-json/master/comuni.json').then(r=>r.json());
+ COMUNI=j.map(c=>`${c.nome} (${c.sigla||c.provincia?.sigla||''})`).sort();
+ COMUNI.slice(0,8000).forEach(n=>{let o=document.createElement('option');o.textContent=n;el('comune').appendChild(o);});
+ renderLista();
 }
-function initReg(){
- let regs=[...new Set(DATA.map(d=>d[2]))].sort();
- let sel=document.getElementById('reg');
- regs.forEach(r=>{let o=document.createElement('option');o.value=r;o.textContent=r;sel.appendChild(o);});
+init();
+el('foto').addEventListener('change',e=>{
+ let f=e.target.files[0]; if(!f) return; let r=new FileReader();
+ r.onload=ev=>{el('preview').src=ev.target.result; el('preview').classList.remove('hidden');};
+ r.readAsDataURL(f);
+});
+function showTab(t){
+ el('tab-segnala').classList.toggle('hidden',t!='segnala');
+ el('tab-comune').classList.toggle('hidden',t!='comune');
+ el('b1').className=t=='segnala'?'bg-white text-black px-3 py-1 rounded-full text-sm font-bold':'bg-zinc-700 px-3 py-1 rounded-full text-sm';
+ el('b2').className=t=='comune'?'bg-white text-black px-3 py-1 rounded-full text-sm font-bold':'bg-zinc-700 px-3 py-1 rounded-full text-sm';
+ if(t=='comune') renderLista();
 }
-function render(list){
- cl.clearLayers(); VIEW=list; document.getElementById('count').innerText=list.length;
- let html="";
- list.slice(0,150).forEach(c=>{
-  let m=L.marker([c[3],c[4]]).bindPopup(`<b>${c[0]}</b><br>${c[1]} - ${c[2]}`);
-  cl.addLayer(m);
-  html+=`<div class="card"><div><b>${c[0]}</b> <small>${c[1]}</small><br><small>${c[2]}</small></div><div><button class="btn" onclick="map.setView([${c[3]},${c[4]}],12)">Vai</button></div></div>`;
- });
- document.getElementById('list').innerHTML=html;
- if(list.length>0){ try{map.fitBounds(cl.getBounds(),{padding:[20,20]});}catch{} }
+function invia(){
+ if(!el('via').value||!el('desc').value){alert('Metti via e descrizione');return;}
+ let s={
+  id:Date.now(), data:new Date().toLocaleString(),
+  comune:el('comune').value, via:el('via').value, tipo:el('tipo').value,
+  desc:el('desc').value, nome:el('nome').value, tel:el('tel').value,
+  foto:el('preview').src||'', stato:'NUOVA'
+ };
+ SEGNALAZIONI.unshift(s); localStorage.setItem('casacomune_segnalazioni',JSON.stringify(SEGNALAZIONI));
+ let msg=`🏠 *SEGNALAZIONE CASACOMUNE*%0A📍 Comune: ${s.comune}%0A📮 Indirizzo: ${s.via}%0A🔧 Guasto: ${s.tipo}%0A📝 Dettaglio: ${s.desc}%0A👤 ${s.nome} - ${s.tel}%0A🕒 ${s.data}`;
+ let wa=`https://wa.me/?text=${msg}`;
+ el('oktxt').innerHTML=`<b>${s.comune}</b><br>${s.via}<br>${s.tipo}`;
+ el('waLink').href=wa; el('ok').classList.remove('hidden');
+ el('desc').value=''; el('via').value='';
+ renderLista();
 }
-function filt(reg){ if(!reg) render(DATA); else render(DATA.filter(d=>d[2]==reg)); }
-function searchQ(q){
- if(!q||q.length<1){render(DATA);return;}
- q=q.toLowerCase(); render(DATA.filter(d=>d[0].toLowerCase().includes(q)));
+function renderLista(){
+ let f=el('filtroComune').value.toLowerCase();
+ let list=SEGNALAZIONI.filter(s=>!f||s.comune.toLowerCase().includes(f));
+ el('lista').innerHTML=list.length?list.map(s=>`
+ <div class="bg-white rounded-xl p-4 shadow border-l-4 ${s.stato=='NUOVA'?'border-red-500':'border-green-500'}">
+ <div class="flex justify-between"><b>${s.tipo}</b><small>${s.data}</small></div>
+ <div class="text-sm mt-1"><b>${s.comune}</b><br>${s.via}<br><i>${s.desc}</i><br>👤 ${s.nome} ${s.tel}</div>
+ ${s.foto?`<img src="${s.foto}" class="w-full h-32 object-cover rounded-lg mt-2">`:''}
+ <div class="flex gap-2 mt-3">
+ <a href="https://wa.me/${el('numTecnico').value||''}?text=${encodeURIComponent(`🔧 INOLTRO TECNICO%0A${s.comune} - ${s.via}%0A${s.tipo}: ${s.desc} - ${s.nome} ${s.tel}`)}" target="_blank" class="flex-1 bg-black text-white text-center p-2 rounded-lg text-sm font-bold">INOLTRA AL TECNICO 🔧</a>
+ <button onclick="chiudi(${s.id})" class="bg-green-100 text-green-700 p-2 rounded-lg text-sm">Chiudi</button>
+ </div>
+ </div>`).join(''):'<p class="text-center text-sm text-gray-400">Nessuna segnalazione</p>';
 }
-function goB(){ if(navigator.geolocation){ navigator.geolocation.getCurrentPosition(p=>{ map.setView([p.coords.latitude,p.coords.longitude],11); L.marker([p.coords.latitude,p.coords.longitude]).addTo(map).bindPopup("Sei qui").openPopup(); }); } }
-load();
+function chiudi(id){ SEGNALAZIONI=SEGNALAZIONI.filter(s=>s.id!=id); localStorage.setItem('casacomune_segnalazioni',JSON.stringify(SEGNALAZIONI)); renderLista(); }
+el('filtroComune').addEventListener('input',renderLista);
 </script>
-</body>
-</html>
+</body></html>
