@@ -1,36 +1,120 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>CasaComune - Italia Embedded</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CasaComune Italia - 7904 Comuni Reali</title>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.css"/>
 <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.Default.css"/>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="https://unpkg.com/leaflet.markercluster@1.4.1/dist/leaflet.markercluster.js"></script>
-<style>*{margin:0;padding:0;box-sizing:border-box;font-family:sans-serif}body{background:#f0f9ff}.header{background:#fff;padding:10px 14px;display:flex;justify-content:space-between;box-shadow:0 2px 10px rgba(0,0,0,.07)}#map{height:65vh;margin:10px;border-radius:18px;border:2px solid #fff}.chip{background:#fff;border:1px solid #ddd;padding:6px 12px;border-radius:999px;font-size:12px;margin:3px;display:inline-block;cursor:pointer}.chip.active{background:#0f2a6b;color:#fff}</style>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:Inter,system-ui,sans-serif}
+body{background:#f0f9ff}
+.header{background:#fff;position:sticky;top:0;z-index:1000;padding:10px 14px;display:flex;justify-content:space-between;align-items:center;box-shadow:0 2px 10px rgba(0,0,0,.08)}
+.logo{font-weight:800;color:#0f2a6b}
+.badge{font-size:10px;background:#2563eb;color:#fff;padding:3px 7px;border-radius:999px;margin-left:6px}
+.pilota{background:#22c55e;color:#fff;padding:7px 14px;border-radius:12px;font-weight:700;font-size:12px}
+#map{height:68vh;margin:10px 12px;border-radius:18px;border:2px solid #fff;box-shadow:0 4px 20px rgba(0,0,0,.08)}
+.controls{text-align:center;padding:8px}
+.chip{background:#fff;border:1.5px solid #e2e8f0;padding:7px 12px;border-radius:999px;font-size:12px;font-weight:600;cursor:pointer;display:inline-block;margin:4px;transition:.2s}
+.chip.active{background:#0f2a6b;color:#fff;border-color:#0f2a6b}
+.chip.green{background:#22c55e;color:#fff;border-color:#22c55e}
+.search{border:1.5px solid #cbd5e1;padding:7px 14px;border-radius:999px;min-width:240px;font-size:12px}
+.loader{background:#0f2a6b;color:#fff;padding:7px 14px;border-radius:999px;font-size:12px;display:inline-block;margin:4px}
+</style>
 </head>
 <body>
-<div class="header"><b>🏠 CasaComune ITALIA 7.904</b><span style="background:#22c55e;color:#fff;padding:5px 10px;border-radius:8px;font-size:12px">Binasco PILOTA 🟢</span></div>
-<div style="text-align:center;padding:10px"><h2 style="color:#0f2a6b">Mappa Nazionale - Tutti i Comuni</h2><p style="font-size:11px;color:#666">Versione EMBEDDED - Caricamento Istantaneo</p></div>
-<div style="text-align:center"><span class="chip active" onclick="filt('all',this)">🇮🇹 Tutta Italia</span><span class="chip" onclick="filt('Lombardia',this)">Lombardia</span><span class="chip" onclick="filt('Lazio',this)">Lazio</span><span class="chip" onclick="filt('Campania',this)">Campania</span><input id="q" class="chip" style="min-width:200px" placeholder="🔍 Cerca Binasco" oninput="searchQ(this.value)"><span id="cnt" class="chip" style="background:#0f2a6b;color:#fff">✅ Caricati</span></div>
+<div class="header">
+  <div class="logo">🏠 CasaComune <span class="badge">ITALIA 7.904 REALI</span></div>
+  <div class="pilota">Binasco PILOTA 🟢</div>
+</div>
+<div style="text-align:center;padding:10px 10px 0">
+  <h1 style="color:#0f2a6b;font-size:22px">Mappa Nazionale — <span style="color:#2563eb">Tutti i 7.904 Comuni Reali</span></h1>
+  <p style="font-size:11px;color:#64748b">Dati ISTAT ufficiali + coordinate reali • Binasco modello pilota</p>
+</div>
+<div class="controls">
+  <span class="chip active" onclick="filterReg('all',this)">🇮🇹 Tutta Italia</span>
+  <span class="chip" onclick="filterReg('Lombardia',this)">Lombardia</span>
+  <span class="chip" onclick="filterReg('Lazio',this)">Lazio</span>
+  <span class="chip" onclick="filterReg('Campania',this)">Campania</span>
+  <span class="chip" onclick="filterReg('Sicilia',this)">Sicilia</span>
+  <span class="chip" onclick="filterReg('Veneto',this)">Veneto</span>
+  <br>
+  <input id="q" class="search" placeholder="🔍 Cerca Comune: es. Binasco, Milano, Roma..." oninput="searchComune(this.value)">
+  <span id="cnt" class="loader">⏳ Carico 7.904 comuni reali...</span>
+  <span id="binascoBtn" class="chip green" onclick="goBinasco()">📍 Vai a Binasco PILOTA</span>
+</div>
 <div id="map"></div>
 <script>
-const COMUNI=[
-{c:"Binasco",p:"MI",r:"Lombardia",la:45.3333,lo:9.1},{c:"Milano",p:"MI",r:"Lombardia",la:45.4642,lo:9.19},{c:"Roma",p:"RM",r:"Lazio",la:41.9028,lo:12.4964},{c:"Napoli",p:"NA",r:"Campania",la:40.8518,lo:14.2681},{c:"Torino",p:"TO",r:"Piemonte",la:45.0703,lo:7.6868},{c:"Firenze",p:"FI",r:"Toscana",la:43.7696,lo:11.2558},{c:"Bologna",p:"BO",r:"Emilia-Romagna",la:44.4949,lo:11.3426},{c:"Venezia",p:"VE",r:"Veneto",la:45.4408,lo:12.3155},{c:"Verona",p:"VR",r:"Veneto",la:45.4386,lo:10.9927},{c:"Padova",p:"PD",r:"Veneto",la:45.4064,lo:11.8768},{c:"Bari",p:"BA",r:"Puglia",la:41.1171,lo:16.8719},{c:"Palermo",p:"PA",r:"Sicilia",la:38.1157,lo:13.3615},{c:"Catania",p:"CT",r:"Sicilia",la:37.5079,lo:15.083},{c:"Genova",p:"GE",r:"Liguria",la:44.4056,lo:8.9463},{c:"Cagliari",p:"CA",r:"Sardegna",la:39.2238,lo:9.1217},{c:"Lacchiarella",p:"MI",r:"Lombardia",la:45.325,lo:9.139},{c:"Zibido San Giacomo",p:"MI",r:"Lombardia",la:45.367,lo:9.117},{c:"Noviglio",p:"MI",r:"Lombardia",la:45.366,lo:9.05},{c:"Vernate",p:"MI",r:"Lombardia",la:45.316,lo:9.066},{c:"Pavia",p:"PV",r:"Lombardia",la:45.1847,lo:9.1582},{c:"Lodi",p:"LO",r:"Lombardia",la:45.3141,lo:9.5031},{c:"Bergamo",p:"BG",r:"Lombardia",la:45.6983,lo:9.6773},{c:"Brescia",p:"BS",r:"Lombardia",la:45.5416,lo:10.2118},{c:"Como",p:"CO",r:"Lombardia",la:45.8081,lo:9.0852},{c:"Varese",p:"VA",r:"Lombardia",la:45.8206,lo:8.8259},{c:"Monza",p:"MB",r:"Lombardia",la:45.5845,lo:9.2734},{c:"Ancona",p:"AN",r:"Marche",la:43.6158,lo:13.5189},{c:"Perugia",p:"PG",r:"Umbria",la:43.1107,lo:12.3908},{c:"L'Aquila",p:"AQ",r:"Abruzzo",la:42.3498,lo:13.3995},{c:"Trento",p:"TN",r:"Trentino",la:46.0667,lo:11.1167},{c:"Bolzano",p:"BZ",r:"Trentino",la:46.4983,lo:11.3548},{c:"Aosta",p:"AO",r:"Valle d'Aosta",la:45.734,lo:7.313},{c:"Trieste",p:"TS",r:"Friuli",la:45.6495,lo:13.7768},{c:"Udine",p:"UD",r:"Friuli",la:46.0626,lo:13.2344},{c:"Potenza",p:"PZ",r:"Basilicata",la:40.6407,lo:15.8053},{c:"Catanzaro",p:"CZ",r:"Calabria",la:38.9,lo:16.6},{c:"Reggio Calabria",p:"RC",r:"Calabria",la:38.108,lo:15.643}
-];
-// Per aggiungere tutti i 7904, il sistema ora carica i cluster istantaneo
-// Aggiungiamo 300 comuni virtuali intorno all'Italia per effetto cluster nazionale
-for(let i=0;i<300;i++){let lat=36+Math.random()*11; let lng=6+Math.random()*12; COMUNI.push({c:"Comune "+i,p:"IT",r:["Lombardia","Lazio","Campania","Sicilia","Puglia","Veneto","Toscana"][i%7],la:lat,lo:lng});}
-
-const map=L.map('map').setView([41.9,12.5],6);
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
-const cluster=L.markerClusterGroup(); map.addLayer(cluster);
-let cur=COMUNI;
-function render(list){cluster.clearLayers(); list.forEach(c=>{let isB=c.c.includes('Binasco'); let m=L.circleMarker([c.la,c.lo],{radius:isB?14:6,fillColor:isB?'#22c55e':'#2563eb',color:'#fff',weight:2,fillOpacity:.9}); m.bindPopup(`<b>${c.c} (${c.p})</b><br>${c.r}<br>${isB?'<b style=color:green>🟢 PILOTA BINASCO ATTIVO</b><br>':''}<button style="background:#2563eb;color:#fff;border:none;padding:5px 10px;border-radius:6px">Dashboard →</button>`); cluster.addLayer(m);}); document.getElementById('cnt').innerText='✅ '+list.length+' Comuni caricati';}
-function filt(r,el){document.querySelectorAll('.chip').forEach(x=>{if(x.textContent.includes('Italia')||x.textContent.includes('Lombardia')||x.textContent.includes('Lazio')) x.classList.remove('active')}); if(el) el.classList.add('active'); if(r==='all'){cur=COMUNI; render(cur); map.setView([41.9,12.5],6); return;} cur=COMUNI.filter(c=>c.r.includes(r)); render(cur); if(cur.length) map.setView([cur[0].la,cur[0].lo],7);}
-function searchQ(q){if(!q){render(cur); return;} let f=COMUNI.filter(c=>c.c.toLowerCase().includes(q.toLowerCase())); render(f); if(f.length) map.setView([f[0].la,f[0].lo],10);}
-render(COMUNI);
+const map = L.map('map').setView([41.9,12.5],6);
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19}).addTo(map);
+const cluster = L.markerClusterGroup({chunkedLoading:true, maxClusterRadius:50});
+map.addLayer(cluster);
+let ALL = [];
+let regioniMap = {};
+async function loadDati() {
+  try {
+    document.getElementById('cnt').innerText='⏳ Scarico database ISTAT...';
+    const [regRes, comRes] = await Promise.all([
+      fetch('https://cdn.jsdelivr.net/gh/napolux/italia@master/regioni/regioni.json').then(r=>r.json()),
+      fetch('https://cdn.jsdelivr.net/gh/napolux/italia@master/comuni/comuni.json').then(r=>r.json())
+    ]);
+    regRes.forEach(r=>{ regioniMap[r.id||r.id_regione] = r.nome || r.regione; });
+    let provRes = await fetch('https://cdn.jsdelivr.net/gh/napolux/italia@master/province/province.json').then(r=>r.json());
+    let provMap = {};
+    provRes.forEach(p=>{ provMap[p.id||p.id_provincia] = {sigla:p.sigla||p.targa||'', nome:p.nome}; });
+    let raw = Array.isArray(comRes)? comRes : Object.values(comRes);
+    ALL = raw.map(c=>{
+      let nome = c.nome || c.comune || '';
+      let lat = parseFloat(c.latitudine || c.lat);
+      let lng = parseFloat(c.longitudine || c.lng);
+      if(isNaN(lat) || isNaN(lng)) return null;
+      let idReg = c.id_regione;
+      let idProv = c.id_provincia;
+      let regNome = regioniMap[idReg] || '';
+      let prov = provMap[idProv] || {};
+      return {comune: nome, prov: prov.sigla || '', provNome: prov.nome || '', reg: regNome, lat: lat, lng: lng};
+    }).filter(Boolean);
+    if(ALL.length < 7000) throw 'pochi';
+    document.getElementById('cnt').innerText = '✅ '+ALL.length+' Comuni REALI caricati';
+    render(ALL);
+  } catch(e){
+    console.log('backup',e);
+    let res = await fetch('https://cdn.jsdelivr.net/gh/comuni-ita/comuni-ita@master/comuni.json').then(r=>r.json());
+    ALL = res.map(c=>({comune:c.nome, prov:c.provincia?.sigla||'', reg:c.regione?.nome||'', lat:parseFloat(c.coordinate?.lat), lng:parseFloat(c.coordinate?.lng)})).filter(c=>!isNaN(c.lat));
+    document.getElementById('cnt').innerText='✅ '+ALL.length+' Comuni REALI caricati';
+    render(ALL);
+  }
+}
+function render(list){
+  cluster.clearLayers();
+  const isSmall = list.length < 800;
+  list.forEach(c=>{
+    const isB = c.comune.toLowerCase() === 'binasco';
+    const marker = L.circleMarker([c.lat, c.lng], {radius: isB? 14 : (isSmall?6:4), fillColor: isB? '#22c55e' : '#2563eb', color: '#fff', weight: isB?3:1.5, fillOpacity: isB?1:0.85});
+    marker.bindPopup(`<div style="min-width:150px"><b>${c.comune} (${c.prov})</b><br><span style="font-size:12px;color:#64748b">${c.reg}</span><br>${isB?'<div style="background:#22c55e;color:#fff;padding:4px 8px;border-radius:6px;font-size:11px;font-weight:700;margin:6px 0">🟢 PILOTA ATTIVO</div>':''}<button style="background:#2563eb;color:#fff;border:none;padding:6px 10px;border-radius:7px;font-size:12px">Dashboard →</button></div>`);
+    cluster.addLayer(marker);
+  });
+}
+function filterReg(reg, el){
+  document.querySelectorAll('.chip').forEach(x=>{ if(x.textContent.includes('Italia')||x.textContent.includes('Lombardia')) x.classList.remove('active') });
+  if(el) el.classList.add('active');
+  if(reg==='all'){ render(ALL); map.setView([41.9,12.5],6); document.getElementById('cnt').innerText='✅ '+ALL.length+' Comuni REALI'; return; }
+  let f = ALL.filter(c=>c.reg.toLowerCase().includes(reg.toLowerCase()));
+  render(f); document.getElementById('cnt').innerText='✅ '+f.length+' Comuni in '+reg; if(f.length>0) map.setView([f[0].lat,f[0].lng],7);
+}
+function searchComune(q){
+  if(!q || q.length<2){ render(ALL); return; }
+  let f = ALL.filter(c=>c.comune.toLowerCase().includes(q.toLowerCase())).slice(0,1000);
+  render(f); document.getElementById('cnt').innerText='🔍 '+f.length+' risultati per "'+q+'"'; if(f.length===1) map.setView([f[0].lat,f[0].lng],12);
+}
+function goBinasco(){
+  let b = ALL.find(c=>c.comune.toLowerCase()==='binasco');
+  if(b){ map.setView([b.lat,b.lng],14); } else { map.setView([45.3333,9.1],13); }
+}
+loadDati();
 </script>
 </body>
-</html
+</html>
