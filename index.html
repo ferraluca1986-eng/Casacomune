@@ -1,18 +1,60 @@
 <!DOCTYPE html>
-<html lang=it>
-<meta charset=UTF-8>
-<meta name=viewport content="width=device-width,initial-scale=1">
-<title>CasaComune</title>
-<script src=https://cdn.tailwindcss.com></script>
-<body class="bg-[#f5f5f0] min-h-screen">
-<div class="bg-black text-white p-4 flex justify-between sticky top-0"><b>🏠 CasaComune</b><div class=flex gap-2><button id=b1 onclick="tab('a')" class="bg-white text-black px-4 py-1 rounded-full text-sm font-bold">SEGNALA</button><button id=b2 onclick="tab('b')" class="bg-zinc-800 text-white px-4 py-1 rounded-full text-sm">COMUNE</button></div></div>
-<div id=a class="p-4 max-w-[480px] mx-auto"><div class="bg-white rounded-[20px] p-5 shadow"><h2 class=font-bold>Segnala guasto in 30 sec</h2><p class="text-sm text-gray-500 mb-3">Inquilino -> Comune -> Tecnico</p><select id=c class="w-full p-3 border rounded-xl mb-2"></select><input id=v placeholder="Via, civico, scala" class="w-full p-3 border rounded-xl mb-2"><select id=t class="w-full p-3 border rounded-xl mb-2"><option>Finestra rotta<option>Porta rotta<option>Caldaia<option>Perdita acqua<option>Muffa<option>Elettrico<option>Ascensore<option>Altro</select><textarea id=d placeholder="Descrivi..." class="w-full p-3 border rounded-xl mb-2 h-20"></textarea><input id=n placeholder=Nome class="w-full p-3 border rounded-xl mb-2"><input id=p placeholder=Telefono class="w-full p-3 border rounded-xl mb-2"><button onclick="go()" class="w-full bg-black text-white p-4 rounded-xl font-bold">INVIA 🚀</button><div id=ok class="hidden mt-3 bg-green-600 text-white p-3 rounded-xl text-center"></div></div></div>
-<div id=b class="hidden p-4 max-w-[480px] mx-auto"><div class="bg-white rounded-xl p-4 mb-2"><b>Dashboard Comune</b><div class="flex gap-2 mt-2"><input id=f placeholder="Filtra comune" class="flex-1 p-2 border rounded"><input id=nt placeholder="N. tecnico 39..." class="flex-1 p-2 border rounded"></div></div><div id=l></div></div>
-<script>
-S=JSON.parse(localStorage.getItem('cc2')||'[]');$=id=>document.getElementById(id);
-async function init(){try{let j=await fetch('https://raw.githubusercontent.com/matteocontrini/comuni-json/master/comuni.json').then(r=>r.json());let s=$('c');s.innerHTML='';j.slice(0,8000).forEach(x=>{let o=document.createElement('option');o.value=x.nome+' ('+x.sigla+')';o.textContent=o.value;s.appendChild(o);});}catch(e){$('c').innerHTML='<option>Milano (MI)</option>'}show();}
-function tab(x){$('a').classList.toggle('hidden',x!='a');$('b').classList.toggle('hidden',x!='b');$('b1').className=x=='a'?'bg-white text-black px-4 py-1 rounded-full text-sm font-bold':'bg-zinc-800 text-white px-4 py-1 rounded-full text-sm';$('b2').className=x=='b'?'bg-white text-black px-4 py-1 rounded-full text-sm font-bold':'bg-zinc-800 text-white px-4 py-1 rounded-full text-sm';if(x=='b')show();}
-function go(){if(!$('v').value||!$('d').value){alert('Via e descrizione');return}let o={id:Date.now(),dt:new Date().toLocaleString(),co:$('c').value,via:$('v').value,tipo:$('t').value,desc:$('d').value,nome:$('n').value,tel:$('p').value};S.unshift(o);localStorage.setItem('cc2',JSON.stringify(S));let m='SEGNALAZIONE '+o.co+' '+o.via+' '+o.tipo;$('ok').innerHTML='✅ Inviata!<br><a href=https://wa.me/?text='+encodeURIComponent(m)+' target=_blank class="block mt-2 bg-white text-black p-2 rounded">Apri WhatsApp</a>';$('ok').classList.remove('hidden');show();}
-function show(){let q=($('f')?.value||'').toLowerCase();let L=S.filter(x=>!q||x.co.toLowerCase().includes(q));$('l').innerHTML=L.length?L.map(s=>`<div class="bg-white p-3 rounded-xl mb-2 border-l-4 border-red-500"><b>${s.tipo}</b> <span class="text-xs text-gray-400">${s.dt}</span><br><b>${s.co}</b><br>${s.via}<br>${s.desc}<br>👤 ${s.nome} ${s.tel}<br><a href="https://wa.me/${($('nt').value||'').replace(/\D/g,'')}?text=${encodeURIComponent('TECNICO: '+s.co+' '+s.via+' '+s.tipo)}" target=_blank class="block mt-2 bg-black text-white text-center p-2 rounded">INOLTRA AL TECNICO 🔧</a></div>`).join(''):'Nessuna segnalazione';}
-$('f')?.addEventListener('input',show);init();
-</script>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>CasaComune - Segnalazioni Case Popolari</title>
+<script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-[#f5f5f0] min-h-screen font-sans">
+<div class="bg-black text-white p-3 flex justify-between items-center sticky top-0 z-10">
+<b>🏠 CasaComune</b>
+<div class="flex gap-1">
+<button id="b1" onclick="tab('a')" class="bg-white text-black px-3 py-1 rounded-full text-xs font-bold">SEGNALA</button>
+<button id="b2" onclick="tab('b')" class="bg-zinc-800 text-white px-3 py-1 rounded-full text-xs">COMUNE</button>
+<button id="b3" onclick="tab('c')" class="bg-zinc-800 text-white px-3 py-1 rounded-full text-xs">ABBONAMENTO</button>
+</div>
+</div>
+
+<!-- TAB SEGNALA -->
+<div id="a" class="p-4 max-w-[480px] mx-auto">
+<div class="bg-white rounded-[20px] p-5 shadow">
+<h2 class="font-bold text-lg">Segnala guasto in 30 sec</h2>
+<p class="text-sm text-gray-500 mb-3">Inquilino -> Comune -> Tecnico. L'inoltro è a cura del Comune.</p>
+<select id="c" class="w-full p-3 border rounded-xl mb-2 bg-white"></select>
+<input id="v" placeholder="Via, civico, scala" class="w-full p-3 border rounded-xl mb-2">
+<select id="t" class="w-full p-3 border rounded-xl mb-2 bg-white">
+<option>Finestra rotta</option><option>Porta rotta</option><option>Caldaia</option><option>Perdita acqua</option><option>Muffa</option><option>Elettrico</option><option>Ascensore</option><option>Altro</option>
+</select>
+<textarea id="d" placeholder="Descrivi il guasto..." class="w-full p-3 border rounded-xl mb-2 h-20"></textarea>
+<input id="n" placeholder="Nome" class="w-full p-3 border rounded-xl mb-2">
+<input id="p" placeholder="Telefono" class="w-full p-3 border rounded-xl mb-2">
+<button onclick="go()" class="w-full bg-black text-white p-4 rounded-xl font-bold">INVIA SEGNALAZIONE 🚀</button>
+<div id="ok" class="hidden mt-3 bg-green-600 text-white p-3 rounded-xl text-center"></div>
+<p class="text-[10px] text-gray-400 mt-3 text-center">CasaComune è solo piattaforma. Non esegue interventi tecnici.</p>
+</div>
+</div>
+
+<!-- TAB COMUNE -->
+<div id="b" class="hidden p-4 max-w-[480px] mx-auto">
+<div class="bg-white rounded-xl p-4 mb-2 shadow">
+<b>Dashboard Comune</b>
+<p class="text-[11px] text-gray-500 mt-1">L'inoltro al tecnico è a cura del Comune. CasaComune è solo piattaforma di segnalazione.</p>
+<div class="flex gap-2 mt-3">
+<input id="f" placeholder="Filtra comune" class="flex-1 p-2 border rounded-lg text-sm">
+<input id="nt" placeholder="N. tecnico 39..." class="flex-1 p-2 border rounded-lg text-sm">
+</div>
+</div>
+<div id="l"></div>
+</div>
+
+<!-- TAB ABBONAMENTO -->
+<div id="cx" class="hidden p-4 max-w-[480px] mx-auto">
+<div class="bg-black text-white rounded-[24px] p-6 mb-4">
+<h2 class="text-2xl font-bold">Scegli il piano</h2>
+<p class="text-sm text-zinc-400 mt-1">Disdici quando vuoi. Attivazione in 24h.</p>
+</div>
+
+<div class="bg-white rounded-[20px] p-5 shadow border mb-3">
+<div class="flex justify-between"><b>STARTER</b><span class="bg-zinc-100 px-2 py-1 rounded text-xs">Fino a 5.000 ab.</span></div>
+<div class="text-3xl font-black mt-2">€990<span class="text-sm font-normal">/anno</span></
