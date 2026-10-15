@@ -1,108 +1,18 @@
-DOCTYPE html>
-<html lang="it"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>CasaComune - Segnala Guasto</title>
-<script src="https://cdn.tailwindcss.com"></script>
-<style>body{font-family:-apple-system,BlinkMacSystemFont}</style></head>
-<body class="bg-gray-100 pb-20">
-<div class="bg-black text-white p-4 sticky top-0 z-50 flex justify-between items-center">
-<b>🏠 CasaComune - GUASTI</b><div class="flex gap-2">
-<button onclick="showTab('segnala')" id="b1" class="bg-white text-black px-3 py-1 rounded-full text-sm font-bold">SEGNALA</button>
-<button onclick="showTab('comune')" id="b2" class="bg-zinc-700 px-3 py-1 rounded-full text-sm">COMUNE</button>
-</div></div>
-
-<!-- TAB SEGNALA -->
-<div id="tab-segnala" class="p-4 max-w-lg mx-auto">
-<div class="bg-white rounded-2xl p-5 shadow">
-<h2 class="font-bold text-lg mb-3">📍 Nuova Segnalazione</h2>
-<label class="text-xs font-bold">COMUNE (7904)</label>
-<select id="comune" class="w-full p-3 border rounded-xl mb-3 bg-white"></select>
-<input id="via" placeholder="Via, civico, scala - es. Via Roma 12 scala B" class="w-full p-3 border rounded-xl mb-3">
-<select id="tipo" class="w-full p-3 border rounded-xl mb-3">
-<option>Finestra rotta</option><option>Porta rotta</option><option>Caldaia / Riscaldamento</option><option>Perdita acqua</option><option>Muffa / Infiltrazione</option><option>Elettrico / Luce</option><option>Ascensore</option><option>Altro</option>
-</select>
-<textarea id="desc" placeholder="Descrivi il guasto..." class="w-full p-3 border rounded-xl mb-3 h-24"></textarea>
-<label class="text-xs font-bold">FOTO GUASTO</label>
-<input type="file" id="foto" accept="image/*" class="w-full mb-3 text-sm">
-<img id="preview" class="hidden w-full rounded-xl mb-3 h-48 object-cover">
-<input id="nome" placeholder="Tuo nome" class="w-full p-3 border rounded-xl mb-3">
-<input id="tel" placeholder="Tuo telefono" class="w-full p-3 border rounded-xl mb-4">
-
-<button onclick="invia()" class="w-full bg-black text-white p-4 rounded-xl font-bold text-lg">INVIA SEGNALAZIONE 🚀</button>
-<p class="text-xs text-center mt-3 text-gray-500">Verrà inviata al Comune che poi la gira al tecnico</p>
-</div>
-<div id="ok" class="hidden mt-4 bg-green-600 text-white p-4 rounded-xl text-center">
-<b>✅ Inviata!</b><br><div id="oktxt" class="text-sm mt-2"></div>
-<a id="waLink" target="_blank" class="block mt-3 bg-white text-green-700 p-3 rounded-xl font-bold">APRI WHATSAPP AL COMUNE</a>
-</div>
-</div>
-
-<!-- TAB COMUNE -->
-<div id="tab-comune" class="hidden p-4 max-w-lg mx-auto">
-<div class="bg-white rounded-2xl p-4 shadow mb-4">
-<h2 class="font-bold">👨‍💼 Dashboard Comune</h2>
-<p class="text-xs text-gray-500">Qui vedi tutte le segnalazioni degli inquilini. Clicchi e le inoltri al tecnico.</p>
-<div class="flex gap-2 mt-3">
-<input id="filtroComune" placeholder="Filtra per comune" class="flex-1 p-2 border rounded-lg text-sm">
-<input id="numTecnico" value="39" placeholder="Numero tecnico (es 39333...)" class="flex-1 p-2 border rounded-lg text-sm">
-</div>
-</div>
-<div id="lista" class="grid gap-3"></div>
-</div>
-
+<!DOCTYPE html>
+<html lang=it>
+<meta charset=UTF-8>
+<meta name=viewport content="width=device-width,initial-scale=1">
+<title>CasaComune</title>
+<script src=https://cdn.tailwindcss.com></script>
+<body class="bg-[#f5f5f0] min-h-screen">
+<div class="bg-black text-white p-4 flex justify-between sticky top-0"><b>🏠 CasaComune</b><div class=flex gap-2><button id=b1 onclick="tab('a')" class="bg-white text-black px-4 py-1 rounded-full text-sm font-bold">SEGNALA</button><button id=b2 onclick="tab('b')" class="bg-zinc-800 text-white px-4 py-1 rounded-full text-sm">COMUNE</button></div></div>
+<div id=a class="p-4 max-w-[480px] mx-auto"><div class="bg-white rounded-[20px] p-5 shadow"><h2 class=font-bold>Segnala guasto in 30 sec</h2><p class="text-sm text-gray-500 mb-3">Inquilino -> Comune -> Tecnico</p><select id=c class="w-full p-3 border rounded-xl mb-2"></select><input id=v placeholder="Via, civico, scala" class="w-full p-3 border rounded-xl mb-2"><select id=t class="w-full p-3 border rounded-xl mb-2"><option>Finestra rotta<option>Porta rotta<option>Caldaia<option>Perdita acqua<option>Muffa<option>Elettrico<option>Ascensore<option>Altro</select><textarea id=d placeholder="Descrivi..." class="w-full p-3 border rounded-xl mb-2 h-20"></textarea><input id=n placeholder=Nome class="w-full p-3 border rounded-xl mb-2"><input id=p placeholder=Telefono class="w-full p-3 border rounded-xl mb-2"><button onclick="go()" class="w-full bg-black text-white p-4 rounded-xl font-bold">INVIA 🚀</button><div id=ok class="hidden mt-3 bg-green-600 text-white p-3 rounded-xl text-center"></div></div></div>
+<div id=b class="hidden p-4 max-w-[480px] mx-auto"><div class="bg-white rounded-xl p-4 mb-2"><b>Dashboard Comune</b><div class="flex gap-2 mt-2"><input id=f placeholder="Filtra comune" class="flex-1 p-2 border rounded"><input id=nt placeholder="N. tecnico 39..." class="flex-1 p-2 border rounded"></div></div><div id=l></div></div>
 <script>
-let COMUNI=[]; let SEGNALAZIONI = JSON.parse(localStorage.getItem('casacomune_segnalazioni')||'[]');
-const el=s=>document.getElementById(s);
-
-async function init(){
- let j=await fetch('https://raw.githubusercontent.com/matteocontrini/comuni-json/master/comuni.json').then(r=>r.json());
- COMUNI=j.map(c=>`${c.nome} (${c.sigla||c.provincia?.sigla||''})`).sort();
- COMUNI.slice(0,8000).forEach(n=>{let o=document.createElement('option');o.textContent=n;el('comune').appendChild(o);});
- renderLista();
-}
-init();
-el('foto').addEventListener('change',e=>{
- let f=e.target.files[0]; if(!f) return; let r=new FileReader();
- r.onload=ev=>{el('preview').src=ev.target.result; el('preview').classList.remove('hidden');};
- r.readAsDataURL(f);
-});
-function showTab(t){
- el('tab-segnala').classList.toggle('hidden',t!='segnala');
- el('tab-comune').classList.toggle('hidden',t!='comune');
- el('b1').className=t=='segnala'?'bg-white text-black px-3 py-1 rounded-full text-sm font-bold':'bg-zinc-700 px-3 py-1 rounded-full text-sm';
- el('b2').className=t=='comune'?'bg-white text-black px-3 py-1 rounded-full text-sm font-bold':'bg-zinc-700 px-3 py-1 rounded-full text-sm';
- if(t=='comune') renderLista();
-}
-function invia(){
- if(!el('via').value||!el('desc').value){alert('Metti via e descrizione');return;}
- let s={
-  id:Date.now(), data:new Date().toLocaleString(),
-  comune:el('comune').value, via:el('via').value, tipo:el('tipo').value,
-  desc:el('desc').value, nome:el('nome').value, tel:el('tel').value,
-  foto:el('preview').src||'', stato:'NUOVA'
- };
- SEGNALAZIONI.unshift(s); localStorage.setItem('casacomune_segnalazioni',JSON.stringify(SEGNALAZIONI));
- let msg=`🏠 *SEGNALAZIONE CASACOMUNE*%0A📍 Comune: ${s.comune}%0A📮 Indirizzo: ${s.via}%0A🔧 Guasto: ${s.tipo}%0A📝 Dettaglio: ${s.desc}%0A👤 ${s.nome} - ${s.tel}%0A🕒 ${s.data}`;
- let wa=`https://wa.me/?text=${msg}`;
- el('oktxt').innerHTML=`<b>${s.comune}</b><br>${s.via}<br>${s.tipo}`;
- el('waLink').href=wa; el('ok').classList.remove('hidden');
- el('desc').value=''; el('via').value='';
- renderLista();
-}
-function renderLista(){
- let f=el('filtroComune').value.toLowerCase();
- let list=SEGNALAZIONI.filter(s=>!f||s.comune.toLowerCase().includes(f));
- el('lista').innerHTML=list.length?list.map(s=>`
- <div class="bg-white rounded-xl p-4 shadow border-l-4 ${s.stato=='NUOVA'?'border-red-500':'border-green-500'}">
- <div class="flex justify-between"><b>${s.tipo}</b><small>${s.data}</small></div>
- <div class="text-sm mt-1"><b>${s.comune}</b><br>${s.via}<br><i>${s.desc}</i><br>👤 ${s.nome} ${s.tel}</div>
- ${s.foto?`<img src="${s.foto}" class="w-full h-32 object-cover rounded-lg mt-2">`:''}
- <div class="flex gap-2 mt-3">
- <a href="https://wa.me/${el('numTecnico').value||''}?text=${encodeURIComponent(`🔧 INOLTRO TECNICO%0A${s.comune} - ${s.via}%0A${s.tipo}: ${s.desc} - ${s.nome} ${s.tel}`)}" target="_blank" class="flex-1 bg-black text-white text-center p-2 rounded-lg text-sm font-bold">INOLTRA AL TECNICO 🔧</a>
- <button onclick="chiudi(${s.id})" class="bg-green-100 text-green-700 p-2 rounded-lg text-sm">Chiudi</button>
- </div>
- </div>`).join(''):'<p class="text-center text-sm text-gray-400">Nessuna segnalazione</p>';
-}
-function chiudi(id){ SEGNALAZIONI=SEGNALAZIONI.filter(s=>s.id!=id); localStorage.setItem('casacomune_segnalazioni',JSON.stringify(SEGNALAZIONI)); renderLista(); }
-el('filtroComune').addEventListener('input',renderLista);
+S=JSON.parse(localStorage.getItem('cc2')||'[]');$=id=>document.getElementById(id);
+async function init(){try{let j=await fetch('https://raw.githubusercontent.com/matteocontrini/comuni-json/master/comuni.json').then(r=>r.json());let s=$('c');s.innerHTML='';j.slice(0,8000).forEach(x=>{let o=document.createElement('option');o.value=x.nome+' ('+x.sigla+')';o.textContent=o.value;s.appendChild(o);});}catch(e){$('c').innerHTML='<option>Milano (MI)</option>'}show();}
+function tab(x){$('a').classList.toggle('hidden',x!='a');$('b').classList.toggle('hidden',x!='b');$('b1').className=x=='a'?'bg-white text-black px-4 py-1 rounded-full text-sm font-bold':'bg-zinc-800 text-white px-4 py-1 rounded-full text-sm';$('b2').className=x=='b'?'bg-white text-black px-4 py-1 rounded-full text-sm font-bold':'bg-zinc-800 text-white px-4 py-1 rounded-full text-sm';if(x=='b')show();}
+function go(){if(!$('v').value||!$('d').value){alert('Via e descrizione');return}let o={id:Date.now(),dt:new Date().toLocaleString(),co:$('c').value,via:$('v').value,tipo:$('t').value,desc:$('d').value,nome:$('n').value,tel:$('p').value};S.unshift(o);localStorage.setItem('cc2',JSON.stringify(S));let m='SEGNALAZIONE '+o.co+' '+o.via+' '+o.tipo;$('ok').innerHTML='✅ Inviata!<br><a href=https://wa.me/?text='+encodeURIComponent(m)+' target=_blank class="block mt-2 bg-white text-black p-2 rounded">Apri WhatsApp</a>';$('ok').classList.remove('hidden');show();}
+function show(){let q=($('f')?.value||'').toLowerCase();let L=S.filter(x=>!q||x.co.toLowerCase().includes(q));$('l').innerHTML=L.length?L.map(s=>`<div class="bg-white p-3 rounded-xl mb-2 border-l-4 border-red-500"><b>${s.tipo}</b> <span class="text-xs text-gray-400">${s.dt}</span><br><b>${s.co}</b><br>${s.via}<br>${s.desc}<br>👤 ${s.nome} ${s.tel}<br><a href="https://wa.me/${($('nt').value||'').replace(/\D/g,'')}?text=${encodeURIComponent('TECNICO: '+s.co+' '+s.via+' '+s.tipo)}" target=_blank class="block mt-2 bg-black text-white text-center p-2 rounded">INOLTRA AL TECNICO 🔧</a></div>`).join(''):'Nessuna segnalazione';}
+$('f')?.addEventListener('input',show);init();
 </script>
-</body></html>
