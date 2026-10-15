@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CasaComune - Gestione Guasti Condominiali | Binasco</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--blue:#0f2a6b;--blue2:#2563eb;--green:#22c55e;--teal:#0d9488;--bg:#f0f9ff;--card:#ffffff;--text:#0f172a;--muted:#64748b}
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Inter',sans-serif}
+body{background:var(--bg);color:var(--text);line-height:1.6}
+.header{background:#fff;position:sticky;top:0;z-index:100;padding:14px 24px;display:flex;justify-content:space-between;align-items:center;box-shadow:0 1px 10px rgba(0,0,0,.05)}
+.logo{font-weight:800;font-size:26px;color:var(--blue);display:flex;align-items:center;gap:8px}
+.logo span{font-size:28px}
+.nav{display:flex;gap:16px;align-items:center}
+.btn{display:inline-flex;align-items:center;justify-content:center;padding:12px 22px;border-radius:12px;font-weight:700;text-decoration:none;cursor:pointer;transition:.2s;border:none}
+.btn-primary{background:var(--green);color:#fff}
+.btn-primary:hover{transform:translateY(-1px);box-shadow:0 8px 20px rgba(34,197,94,.3)}
+.btn-outline{border:1.5px solid #e2e8f0;background:#fff;color:var(--text)}
+.hero{max-width:1200px;margin:0 auto;padding:56px 24px;text-align:center}
+.hero h1{font-size:clamp(28px,4vw,44px);font-weight:800;color:var(--blue);line-height:1.1;letter-spacing:-.02em}
+.hero h1 span{color:var(--blue2)}
+.hero p{color:var(--muted);margin:14px auto 0;max-width:600px;font-size:17px}
+.badge{display:inline-flex;gap:6px;background:#fff;border:1px solid #e2e8f0;padding:6px 12px;border-radius:999px;font-size:12px;font-weight:600;color:var(--muted);margin-bottom:18px}
+.steps-wrap{max-width:1200px;margin:24px auto;padding:0 24px}
+.steps{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+@media(max-width:900px){.steps{grid-template-columns:1fr 1fr} }
+@media(max-width:500px){.steps{grid-template-columns:1fr} }
+.card{background:var(--card);border-radius:20px;padding:22px;border:1px solid #f1f5f9;box-shadow:0 8px 30px rgba(15,42,107,.06);text-align:center;position:relative;overflow:hidden}
+.card::before{content:'';position:absolute;top:0;left:0;right:0;height:4px}
+.card:nth-child(1)::before{background:var(--blue2)}
+.card:nth-child(2)::before{background:var(--teal)}
+.card:nth-child(3)::before{background:var(--blue2)}
+.card:nth-child(4)::before{background:var(--green)}
+.icon{width:64px;height:64px;border-radius:18px;display:flex;align-items:center;justify-content:center;font-size:28px;margin:0 auto 14px;color:#fff}
+.i1{background:linear-gradient(135deg,#2563eb,#1e40af)} .i2{background:linear-gradient(135deg,#0d9488,#0f766e)} .i3{background:linear-gradient(135deg,#2563eb,#1e40af)} .i4{background:linear-gradient(135deg,#22c55e,#16a34a)}
+.card h3{font-size:16px;font-weight:800;margin-bottom:6px}
+.card p{font-size:13.5px;color:var(--muted);line-height:1.5}
+.step-num{position:absolute;top:12px;right:14px;font-size:11px;font-weight:800;color:#cbd5e1}
+.cta{display:flex;gap:12px;justify-content:center;margin:32px 0;flex-wrap:wrap}
+.section{max-width:1100px;margin:40px auto;padding:0 24px}
+.grid2{display:grid;grid-template-columns:1.1fr .9fr;gap:20px;align-items:start}
+@media(max-width:800px){.grid2{grid-template-columns:1fr}}
+.form-card{background:#fff;border-radius:20px;padding:22px;border:1px solid #e2e8f0;box-shadow:0 10px 40px rgba(0,0,0,.06)}
+.form-card h3{display:flex;align-items:center;gap:8px;font-size:18px;margin-bottom:14px}
+.input{width:100%;padding:12px 14px;border-radius:10px;border:1.5px solid #e2e8f0;background:#f8fafc;font-size:14px;margin-bottom:10px;outline:none}
+.input:focus{border-color:var(--blue2);background:#fff}
+.footer{margin-top:50px;background:#0f172a;color:#94a3b8;text-align:center;padding:24px;font-size:12px}
+.kpi{display:flex;gap:18px;justify-content:center;margin:18px 0;flex-wrap:wrap}
+.kpi div{background:#fff;border:1px solid #e2e8f0;padding:8px 14px;border-radius:999px;font-size:12px;font-weight:600}
+</style>
+</head>
+<body>
+<header class="header">
+<div class="logo"><span>🏠</span> CasaComune</div>
+<div class="nav">
+<a href="#demo" class="btn btn-outline" style="padding:8px 14px;font-size:13px">Demo</a>
+<a href="#segnala" class="btn btn-primary" style="padding:8px 16px;font-size:13px">Accedi →</a>
+</div>
+</header>
+
+<section class="hero">
+<div class="badge">⚡️ Progetto pilota Comune di Binasco (MI) - 2026</div>
+<h1>Come funziona<br><span>Dal guasto al fix in 4 step</span></h1>
+<p>Processo semplice e trasparente per i guasti condominiali. Digitalizziamo la manutenzione per amministratori, tecnici e cittadini.</p>
+<div class="kpi">
+<div>⏱ 45 sec tempo medio segnalazione</div>
+<div>📍 Geolocalizzato + QR</div>
+<div>🔒 GDPR
