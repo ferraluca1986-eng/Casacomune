@@ -3,149 +3,77 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>CasaComune - Gestione Manutenzioni Comunali</title>
+<title>CasaComune - 390€/anno</title>
 <style>
-:root{--primary:#0b5a3a;--primary-light:#e6f4ee;--accent:#ff8c00;--bg:#f7f9f8;--text:#1a2b23}
-*{box-sizing:border-box;margin:0;padding:0;font-family:Inter,system-ui,sans-serif}
-body{background:var(--bg);color:var(--text)}
-header{background:var(--primary);color:white;padding:16px 20px;display:flex;justify-content:space-between;align-items:center}
-header h1{font-size:20px}
-header span{font-size:12px;opacity:0.9;background:rgba(255,255,255,0.15);padding:4px 8px;border-radius:6px}
-.tabs{display:flex;background:white;border-bottom:1px solid #ddd}
-.tab{flex:1;padding:14px;text-align:center;cursor:pointer;font-weight:600;border-bottom:3px solid transparent}
-.tab.active{border-color:var(--primary);color:var(--primary);background:var(--primary-light)}
-.view{display:none;padding:20px;max-width:800px;margin:0 auto}
-.view.active{display:block}
-.card{background:white;border-radius:12px;padding:18px;box-shadow:0 2px 10px rgba(0,0,0,0.06);margin-bottom:16px}
-label{font-weight:600;font-size:14px;display:block;margin:12px 0 6px}
-input,select,textarea{width:100%;padding:12px;border:1px solid #ccc;border-radius:8px;font-size:15px}
-textarea{min-height:90px}
-button.primary{background:var(--primary);color:white;border:none;padding:13px 18px;border-radius:8px;font-weight:700;width:100%;cursor:pointer;margin-top:14px}
-button.secondary{background:white;color:var(--primary);border:2px solid var(--primary);padding:10px 14px;border-radius:8px;font-weight:600;cursor:pointer}
-.status{padding:4px 10px;border-radius:20px;font-size:12px;font-weight:700;display:inline-block}
-.status-APERTA{background:#fff3cd;color:#856404}
-.status-INOLTRATA{background:#cce5ff;color:#004085}
-.status-CHIUSA{background:#d4edda;color:#155724}
-.legal{font-size:11px;color:#666;background:#f0f0f0;padding:12px;border-radius:8px;margin-top:18px;line-height:1.4}
-.footer{text-align:center;padding:20px;font-size:11px;color:#888}
-.badge{display:inline-block;background:var(--primary-light);color:var(--primary);padding:6px 10px;border-radius:6px;font-size:12px;margin:2px}
-img.preview{width:100%;max-height:220px;object-fit:cover;border-radius:8px;margin-top:8px}
+:root{--bg:#f8fafc;--card:#ffffff;--text:#0f172a;--muted:#64748b;--primary:#111827;--accent:#16a34a;--border:#e2e8f0}
+*{box-sizing:border-box;font-family:Inter,system-ui,sans-serif}
+body{margin:0;background:var(--bg);color:var(--text)}
+header{padding:20px 16px;background:white;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center}
+.logo{font-weight:800;font-size:18px}.badge{background:#dcfce7;color:#166534;padding:4px 8px;border-radius:99px;font-size:12px;font-weight:700}
+.container{max-width:1100px;margin:0 auto;padding:16px}.tabs{display:flex;gap:8px;margin:16px 0}
+.tab{flex:1;padding:14px;border-radius:12px;border:1px solid var(--border);background:white;cursor:pointer;font-weight:700;text-align:center}
+.tab.active{background:var(--primary);color:white}.card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:16px;margin-bottom:16px}
+label{display:block;font-size:13px;font-weight:600;margin:12px 0 4px 0}
+input,textarea,select{width:100%;padding:12px;border:1px solid var(--border);border-radius:10px;font-size:15px}
+.btn{width:100%;padding:14px;border-radius:12px;border:0;font-weight:800;font-size:15px;cursor:pointer}
+.btn-primary{background:var(--primary);color:white}.btn-accent{background:var(--accent);color:white}
+.btn-outline{background:white;border:1px solid var(--border)}.small{font-size:13px;color:var(--muted)}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.ticket{border:1px solid var(--border);border-radius:12px;padding:12px;margin:8px 0;background:#fff}
+.price-box{background:#f0fdf4;border:1px solid #bbf7d0;border-radius:12px;padding:12px;margin:12px 0}
 </style>
 </head>
 <body>
-<header>
-<div>
-<h1>🏠 CasaComune</h1>
-<div style="font-size:13px;opacity:0.9">Gestione Manutenzioni - Versione COMUNE</div>
-</div>
-<span>V3 FINALE • Legale</span>
-</header>
-
+<header><div class="logo">🏠 CasaComune</div><div class="badge">Server UE • GDPR • 390€/anno</div></header>
+<div class="container">
 <div class="tabs">
-<div class="tab active" onclick="showTab('inquilino')">INQUILINO</div>
-<div class="tab" onclick="showTab('comune')">COMUNE</div>
+<div class="tab active" onclick="switchTab('inquilino')" id="tab-inquilino">👤 INQUILINO</div>
+<div class="tab" onclick="switchTab('comune')" id="tab-comune">🏛️ COMUNE</div>
 </div>
 
-<div id="view-inquilino" class="view active">
+<div id="view-inquilino">
 <div class="card">
-<h3>Segnala un guasto</h3>
-<p style="font-size:13px;color:#555;margin:6px 0 12px">Compila i campi. La segnalazione sarà inviata all'Ufficio Tecnico del Comune.</p>
-<label>Nome e Cognome *</label>
-<input id="nome" placeholder="Mario Rossi">
-<label>Indirizzo alloggio *</label>
-<input id="indirizzo" placeholder="Via Roma 12, Binasco (MI)">
-<label>Telefono</label>
-<input id="telefono" placeholder="345...">
-<label>Tipo guasto *</label>
-<select id="tipo">
-<option value="">Seleziona...</option>
-<option>Perdita acqua / idraulico</option>
-<option>Elettrico / luce scale</option>
-<option>Riscaldamento / caldaia</option>
-<option>Infissi / porte / finestre</option>
-<option>Muffa / infiltrazioni</option>
-<option>Ascensore</option>
-<option>Altro</option>
-</select>
-<label>Descrizione dettagliata *</label>
-<textarea id="descrizione" placeholder="Descrivi cosa succede, da quando, dove..."></textarea>
-<label>Foto del guasto (consigliata)</label>
-<input type="file" id="foto" accept="image/*">
-<img id="previewFoto" class="preview" style="display:none">
-<button class="primary" onclick="inviaSegnalazione()">INVIA SEGNALAZIONE AL COMUNE</button>
-<div class="legal">
-<strong>Informativa legale:</strong> Questa piattaforma è un mero strumento tecnico di raccolta segnalazioni. L'inoltro, la presa in carico e l'esecuzione degli interventi sono di esclusiva competenza e responsabilità dell'Ente Comunale e dei tecnici incaricati. Non sostituisce i numeri di emergenza. Per guasti gravi (gas, allagamento, pericolo) contattare immediatamente i numeri di emergenza.<br><br>
-Con l'invio acconsenti al trattamento dati GDPR Reg. UE 2016/679 per sole finalità di gestione manutenzione. Titolare: Comune. Server UE.<br><br>
-<a href="#">Privacy Policy</a> • <a href="#">Termini d'uso</a>
+<h2>Segnala un guasto</h2>
+<p class="small">CF per verifica residenza.</p>
+<label>Codice Fiscale *</label><input id="cf" placeholder="RSSMRA80A01F205Z">
+<div class="grid"><div><label>Nome e Cognome *</label><input id="nome"></div><div><label>Indirizzo *</label><input id="indirizzo" placeholder="Via Roma 14, Binasco"></div></div>
+<div class="grid"><div><label>Telefono</label><input id="tel"></div><div><label>Tipo guasto *</label><select id="tipo"><option>Perdita acqua</option><option>Riscaldamento</option><option>Elettrico</option><option>Infiltrazione</option><option>Altro</option></select></div></div>
+<label>Descrizione *</label><textarea id="desc" rows="3"></textarea>
+<button class="btn btn-primary" style="margin-top:16px" onclick="inviaSegnalazione()">📩 Invia segnalazione</button>
 </div>
-</div>
+<div id="conferma" style="display:none" class="card"><h3>✅ Inviata</h3><p class="small">ID: <b id="id-pratica"></b></p></div>
 </div>
 
-<div id="view-comune" class="view">
+<div id="view-comune" style="display:none">
+<div class="card" style="border:2px solid #16a34a">
+<h2>🚀 Attiva CasaComune</h2>
+<div class="price-box"><b style="font-size:18px">Offerta lancio: 390€/anno (32€/mese)</b><br><span class="small">Primi 5 Comuni poi 690€/anno. Include attivazione, formazione, WhatsApp, hosting UE, DPA.</span></div>
+<label>Nome Comune *</label><input id="c-nome" placeholder="Comune di Binasco">
+<div class="grid"><div><label>P.IVA / CF Comune *</label><input id="c-piva"></div><div><label>Codice Univoco *</label><input id="c-sdi" placeholder="UF..."></div></div>
+<div class="grid"><div><label>Referente + Email *</label><input id="c-ref"></div><div><label>PEC *</label><input id="c-pec"></div></div>
+<button class="btn btn-accent" style="margin-top:12px" onclick="richiediAbbonamento()">✅ Richiedi attivazione 390€/anno su WhatsApp</button>
+<p class="small">Fattura elettronica con CIG.</p>
+</div>
+
 <div class="card">
-<h3>Pannello Ufficio Tecnico - Comune</h3>
-<div style="margin:10px 0">
-<span class="badge" id="countAperte">0 Aperte</span>
-<span class="badge" id="countInoltrate">0 Inoltrate</span>
-<span class="badge" id="countChiuse">0 Chiuse</span>
+<h3>📄 Documenti per DPO</h3>
+<p class="small">Pronti per determina &lt;1000€</p>
+<div style="display:flex;gap:8px;flex-wrap:wrap;margin:12px 0">
+<a href="./DPA_CasaComune_Art28_GDPR.pdf" download style="padding:10px 14px;background:#111827;color:white;border-radius:10px;text-decoration:none;font-weight:700">⬇️ Scarica DPA Art.28</a>
 </div>
-<div style="display:flex;gap:8px;margin-top:12px">
-<input id="filtro" placeholder="Filtra per indirizzo o nome..." oninput="renderLista()">
-<button class="secondary" onclick="esportaCSV()">Esporta CSV</button>
-</div>
-</div>
-<div id="listaSegnalazioni"></div>
+<ul class="small"><li>Server: Firebase/AWS UE - No extra-UE</li><li>Dati minimi: Nome, CF facoltativo, indirizzo, foto</li><li>Base: Art.6.1.e</li><li>Breach 48h</li></ul>
 </div>
 
-<div class="footer">CasaComune V3 • SaaS per Comuni • Canone annuale • 2026</div>
+<div class="card"><h3>📋 Segnalazioni Demo</h3><div id="lista-ticket"><p class="small">Nessuna.</p></div><button class="btn-outline" style="margin-top:8px" onclick="esportaCSV()">⬇️ Esporta CSV</button></div>
+</div>
+</div>
 
 <script>
-let segnalazioni = JSON.parse(localStorage.getItem('casacomune_v3')||'[]');
-function showTab(t){
-document.querySelectorAll('.tab').forEach(e=>e.classList.remove('active'));
-document.querySelectorAll('.view').forEach(e=>e.classList.remove('active'));
-if(t==='inquilino'){document.querySelectorAll('.tab')[0].classList.add('active');document.getElementById('view-inquilino').classList.add('active')}
-else{document.querySelectorAll('.tab')[1].classList.add('active');document.getElementById('view-comune').classList.add('active');renderLista()}
-}
-document.getElementById('foto').addEventListener('change', e=>{
-const file=e.target.files[0];if(!file)return;
-const reader=new FileReader();
-reader.onload=ev=>{document.getElementById('previewFoto').src=ev.target.result;document.getElementById('previewFoto').style.display='block';};
-reader.readAsDataURL(file);
-});
-function inviaSegnalazione(){
-const nome=document.getElementById('nome').value.trim();
-const indirizzo=document.getElementById('indirizzo').value.trim();
-const telefono=document.getElementById('telefono').value.trim();
-const tipo=document.getElementById('tipo').value;
-const descrizione=document.getElementById('descrizione').value.trim();
-const fotoEl=document.getElementById('previewFoto');
-if(!nome||!indirizzo||!tipo||!descrizione){alert('Compila tutti i campi obbligatori *');return}
-const nuova={id:Date.now(),data:new Date().toLocaleString('it-IT'),nome,indirizzo,telefono,tipo,descrizione,foto:fotoEl.src||'',stato:'APERTA'};
-segnalazioni.unshift(nuova);
-localStorage.setItem('casacomune_v3',JSON.stringify(segnalazioni));
-alert('Segnalazione inviata al Comune.');
-document.getElementById('nome').value='';document.getElementById('indirizzo').value='';document.getElementById('telefono').value='';document.getElementById('tipo').value='';document.getElementById('descrizione').value='';document.getElementById('foto').value='';fotoEl.style.display='none';
-}
-function renderLista(){
-const filtro=document.getElementById('filtro').value.toLowerCase();
-const container=document.getElementById('listaSegnalazioni');
-container.innerHTML='';let cA=0,cI=0,cC=0;
-segnalazioni.forEach(s=>{
-if(s.stato==='APERTA')cA++;if(s.stato==='INOLTRATA')cI++;if(s.stato==='CHIUSA')cC++;
-if(filtro &&!(s.indirizzo.toLowerCase().includes(filtro)||s.nome.toLowerCase().includes(filtro)))return;
-const div=document.createElement('div');div.className='card';
-div.innerHTML=`<div style="display:flex;justify-content:space-between"><strong>${s.tipo}</strong><span class="status status-${s.stato}">${s.stato}</span></div><div style="font-size:13px;margin:8px 0"><b>${s.nome}</b> - ${s.indirizzo}<br>Tel: ${s.telefono||'n/d'} | ${s.data}</div><div style="font-size:14px;background:#f9f9f9;padding:10px;border-radius:6px">${s.descrizione}</div>${s.foto?`<img src="${s.foto}" class="preview">`:''}<div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap"><button class="secondary" onclick="cambiaStato(${s.id},'INOLTRATA')">Inoltrata</button><button class="secondary" onclick="cambiaStato(${s.id},'CHIUSA')">Chiudi</button><button class="primary" style="background:#25D366" onclick="inoltraWhatsApp(${s.id})">WhatsApp al tecnico</button><button class="secondary" onclick="elimina(${s.id})" style="border-color:red;color:red">Elimina</button></div>`;
-container.appendChild(div);
-});
-document.getElementById('countAperte').textContent=cA+' Aperte';document.getElementById('countInoltrate').textContent=cI+' Inoltrate';document.getElementById('countChiuse').textContent=cC+' Chiuse';
-if(segnalazioni.length===0)container.innerHTML='<div class="card">Nessuna segnalazione. Modalità demo locale. Con Firebase sarà in tempo reale.</div>';
-}
-function cambiaStato(id,nuovo){const s=segnalazioni.find(x=>x.id===id);if(s){s.stato=nuovo;localStorage.setItem('casacomune_v3',JSON.stringify(segnalazioni));renderLista()}}
-function inoltraWhatsApp(id){const s=segnalazioni.find(x=>x.id===id);if(!s)return;const testo=`*CasaComune - ${s.stato}*%0A*Tipo:* ${s.tipo}%0A*Da:* ${s.nome}%0A*Indirizzo:* ${s.indirizzo}%0A*Tel:* ${s.telefono}%0A*Data:* ${s.data}%0A*Desc:* ${s.descrizione}%0A_Piattaforma tecnica - Intervento a cura del Comune_`;window.open(`https://wa.me/?text=${testo}`,'_blank');cambiaStato(id,'INOLTRATA');}
-function elimina(id){if(!confirm('Eliminare?'))return;segnalazioni=segnalazioni.filter(x=>x.id!==id);localStorage.setItem('casacomune_v3',JSON.stringify(segnalazioni));renderLista();}
-function esportaCSV(){let csv='ID,Data,Nome,Indirizzo,Telefono,Tipo,Descrizione,Stato\n';segnalazioni.forEach(s=>{csv+=`${s.id},"${s.data}","${s.nome}","${s.indirizzo}","${s.telefono}","${s.tipo}","${s.descrizione.replace(/"/g,'""')}","${s.stato}"\n`});const blob=new Blob([csv],{type:'text/csv'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='casacomune_segnalazioni.csv';a.click();}
-renderLista();
+function switchTab(t){document.getElementById('view-inquilino').style.display=t==='inquilino'?'block':'none';document.getElementById('view-comune').style.display=t==='comune'?'block':'none';document.getElementById('tab-inquilino').classList.toggle('active',t==='inquilino');document.getElementById('tab-comune').classList.toggle('active',t==='comune');}
+let tickets=JSON.parse(localStorage.getItem('cc_tickets')||'[]');renderTickets();
+function inviaSegnalazione(){const cf=document.getElementById('cf').value.trim();const nome=document.getElementById('nome').value.trim();const indirizzo=document.getElementById('indirizzo').value.trim();const desc=document.getElementById('desc').value.trim();if(!cf||!nome||!indirizzo||!desc){alert('Compila CF, Nome, Indirizzo, Descrizione');return;}const id='CC-'+new Date().toISOString().slice(0,10)+'-'+Math.floor(Math.random()*9000+1000);tickets.unshift({id,cf,nome,indirizzo,tel:document.getElementById('tel').value,tipo:document.getElementById('tipo').value,desc,data:new Date().toLocaleString()});localStorage.setItem('cc_tickets',JSON.stringify(tickets));document.getElementById('id-pratica').innerText=id;document.getElementById('conferma').style.display='block';renderTickets();}
+function renderTickets(){const div=document.getElementById('lista-ticket');if(tickets.length===0){div.innerHTML='<p class=small>Nessuna.</p>';return;}div.innerHTML=tickets.map(t=>`<div class=ticket><b>${t.id}</b> - ${t.tipo} - ${t.data}<br><b>${t.nome}</b> (${t.cf}) - ${t.indirizzo}<br><span class=small>${t.desc}</span></div>`).join('');}
+function esportaCSV(){if(tickets.length===0){alert('Niente');return;}let csv='ID,Data,Tipo,Nome,CF,Indirizzo\n';csv+=tickets.map(t=>`"${t.id}","${t.data}","${t.tipo}","${t.nome}","${t.cf}","${t.indirizzo}"`).join('\n');const blob=new Blob([csv],{type:'text/csv'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='segnalazioni.csv';a.click();}
+function richiediAbbonamento(){const nome=document.getElementById('c-nome').value.trim();const piva=document.getElementById('c-piva').value.trim();const sdi=document.getElementById('c-sdi').value.trim();const ref=document.getElementById('c-ref').value.trim();const pec=document.getElementById('c-pec').value.trim();if(!nome||!piva||!sdi||!ref){alert('Compila Nome Comune, P.IVA, SDI, Referente');return;}const msg=`RICHIESTA ATTIVAZIONE CASACOMUNE 390€/ANNO%0A%0AComune: ${nome}%0AP.IVA: ${piva}%0ACod Univoco: ${sdi}%0AReferente: ${ref}%0APEC: ${pec}%0A%0APrezzo: 390€/anno`;window.open(`https://wa.me/393890298145?text=${msg}`,'_blank');}
 </script>
 </body>
 </html>
