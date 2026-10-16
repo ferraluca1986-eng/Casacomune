@@ -1,1 +1,151 @@
-<!DOCTYPE html><html lang="it"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>CasaComune</title><script src="https://cdn.tailwindcss.com"></script></head><body class="bg-[#f5f5f0] min-h-screen"><div class="bg-black text-white p-3 flex justify-between items-center sticky top-0 z-10"><b>🏠 CasaComune</b><div class="flex gap-1"><button id="b1" onclick="tab('a')" class="bg-white text-black px-3 py-1 rounded-full text-xs font-bold">SEGNALA</button><button id="b2" onclick="tab('b')" class="bg-zinc-800 text-white px-3 py-1 rounded-full text-xs">COMUNE</button><button id="b3" onclick="tab('c')" class="bg-zinc-800 text-white px-3 py-1 rounded-full text-xs">ABBONAMENTO</button></div></div><div id="a" class="p-4 max-w-[480px] mx-auto"><div class="bg-white rounded-[20px] p-5 shadow"><h2 class="font-bold">Segnala guasto in 30 sec</h2><select id="c" class="w-full p-3 border rounded-xl mb-2"></select><input id="v" placeholder="Via, civico, scala" class="w-full p-3 border rounded-xl mb-2"><select id="t" class="w-full p-3 border rounded-xl mb-2"><option>Finestra rotta</option><option>Porta rotta</option><option>Caldaia</option><option>Perdita acqua</option><option>Muffa</option><option>Elettrico</option><option>Ascensore</option><option>Altro</option></select><textarea id="d" placeholder="Descrivi..." class="w-full p-3 border rounded-xl mb-2 h-20"></textarea><input id="n" placeholder="Nome" class="w-full p-3 border rounded-xl mb-2"><input id="p" placeholder="Telefono" class="w-full p-3 border rounded-xl mb-2"><button onclick="go()" class="w-full bg-black text-white p-4 rounded-xl font-bold">INVIA 🚀</button><div id="ok" class="hidden mt-3 bg-green-600 text-white p-3 rounded-xl text-center"></div></div></div><div id="b" class="hidden p-4 max-w-[480px] mx-auto"><div class="bg-white rounded-xl p-4 mb-2"><b>Dashboard Comune</b><div class="flex gap-2 mt-2"><input id="f" placeholder="Filtra comune" class="flex-1 p-2 border rounded"><input id="nt" placeholder="N. tecnico 39..." class="flex-1 p-2 border rounded"></div></div><div id="l"></div></div><div id="cx" class="hidden p-4 max-w-[480px] mx-auto"><div class="bg-black text-white rounded-[24px] p-6 mb-4"><h2 class="text-2xl font-bold">Scegli il piano</h2></div><div class="bg-white rounded-[20px] p-5 shadow border mb-3"><div class="flex justify-between"><b>STARTER</b><span class="bg-zinc-100 px-2 py-1 rounded text-xs">5.000 ab.</span></div><div class="text-3xl font-black mt-2">€990<span class="text-sm font-normal">/anno</span></div><button onclick="sub('STARTER 990')" class="w-full mt-4 border-2 border-black p-3 rounded-xl font-bold">Scegli Starter</button></div><div class="bg-black text-white rounded-[20px] p-5 shadow border-2 border-yellow-400"><b>PRO ⭐ Consigliato</b><div class="text-3xl font-black mt-2">€2.990<span class="text-sm font-normal">/anno</span></div><button onclick="sub('PRO 2990')" class="w-full mt-4 bg-white text-black p-3 rounded-xl font-bold">Scegli Pro 🚀</button></div></div><script>S=JSON.parse(localStorage.getItem('cc2')||'[]');$=id=>document.getElementById(id);async function init(){try{let j=await fetch('https://raw.githubusercontent.com/matteocontrini/comuni-json/master/comuni.json').then(r=>r.json());let s=$('c');s.innerHTML='';j.slice(0,8000).forEach(x=>{let o=document.createElement('option');o.value=x.nome+' ('+x.sigla+')';o.textContent=o.value;s.appendChild(o);});}catch(e){$('c').innerHTML='<option>Milano (MI)</option>'}show();}function tab(x){$('a').classList.toggle('hidden',x!='a');$('b').classList.toggle('hidden',x!='b');$('cx').classList.toggle('hidden',x!='c');$('b1').className=x=='a'?'bg-white text-black px-3 py-1 rounded-full text-xs font-bold':'bg-zinc-800 text-white px-3 py-1 rounded-full text-xs';$('b2').className=x=='b'?'bg-white text-black px-3 py-1 rounded-full text-xs font-bold':'bg-zinc-800 text-white px-3 py-1 rounded-full text-xs';$('b3').className=x=='c'?'bg-white text-black px-3 py-1 rounded-full text-xs font-bold':'bg-zinc-800 text-white px-3 py-1 rounded-full text-xs';if(x=='b')show();}function go(){if(!$('v').value||!$('d').value){alert('Via e descrizione');return}let o={id:Date.now(),dt:new Date().toLocaleString(),co:$('c').value,via:$('v').value,tipo:$('t').value,desc:$('d').value,nome:$('n').value,tel:$('p').value};S.unshift(o);localStorage.setItem('cc2',JSON.stringify(S));let m='SEGNALAZIONE '+o.co+' '+o.via+' '+o.tipo;$('ok').innerHTML='✅ Inviata!<br><a href=https://wa.me/?text='+encodeURIComponent(m)+' target=_blank class="block mt-2 bg-white text-black p-2 rounded">Apri WhatsApp</a>';$('ok').classList.remove('hidden');show();}function show(){let q=($('f')?.value||'').toLowerCase();let L=S.filter(x=>!q||x.co.toLowerCase().includes(q));$('l').innerHTML=L.length?L.map(s=>`<div class="bg-white p-3 rounded-xl mb-2 border-l-4 border-red-500"><b>${s.tipo}</b> <span class="text-xs text-gray-400">${s.dt}</span><br><b>${s.co}</b><br>${s.via}<br>${s.desc}<br>👤 ${s.nome} ${s.tel}<br><a href="https://wa.me/${($('nt').value||'').replace(/\D/g,'')}?text=${encodeURIComponent('TECNICO: '+s.co+' '+s.via+' '+s.tipo)}" target=_blank class="block mt-2 bg-black text-white text-center p-2 rounded">INOLTRA AL TECNICO 🔧</a></div>`).join(''):'Nessuna segnalazione';}function sub(p){let c=prompt('Comune e P.IVA per attivare '+p+'?');if(!c)return;let m='CIAO SONO '+c+' VOGLIO ATTIVARE '+p+' PER CASACOMUNE';location.href='https://wa.me/393488000000?text='+encodeURIComponent(m);} $('f')?.addEventListener('input',show);init();</script></body></html>
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CasaComune - Gestione Manutenzioni Comunali</title>
+<style>
+:root{--primary:#0b5a3a;--primary-light:#e6f4ee;--accent:#ff8c00;--bg:#f7f9f8;--text:#1a2b23}
+*{box-sizing:border-box;margin:0;padding:0;font-family:Inter,system-ui,sans-serif}
+body{background:var(--bg);color:var(--text)}
+header{background:var(--primary);color:white;padding:16px 20px;display:flex;justify-content:space-between;align-items:center}
+header h1{font-size:20px}
+header span{font-size:12px;opacity:0.9;background:rgba(255,255,255,0.15);padding:4px 8px;border-radius:6px}
+.tabs{display:flex;background:white;border-bottom:1px solid #ddd}
+.tab{flex:1;padding:14px;text-align:center;cursor:pointer;font-weight:600;border-bottom:3px solid transparent}
+.tab.active{border-color:var(--primary);color:var(--primary);background:var(--primary-light)}
+.view{display:none;padding:20px;max-width:800px;margin:0 auto}
+.view.active{display:block}
+.card{background:white;border-radius:12px;padding:18px;box-shadow:0 2px 10px rgba(0,0,0,0.06);margin-bottom:16px}
+label{font-weight:600;font-size:14px;display:block;margin:12px 0 6px}
+input,select,textarea{width:100%;padding:12px;border:1px solid #ccc;border-radius:8px;font-size:15px}
+textarea{min-height:90px}
+button.primary{background:var(--primary);color:white;border:none;padding:13px 18px;border-radius:8px;font-weight:700;width:100%;cursor:pointer;margin-top:14px}
+button.secondary{background:white;color:var(--primary);border:2px solid var(--primary);padding:10px 14px;border-radius:8px;font-weight:600;cursor:pointer}
+.status{padding:4px 10px;border-radius:20px;font-size:12px;font-weight:700;display:inline-block}
+.status-APERTA{background:#fff3cd;color:#856404}
+.status-INOLTRATA{background:#cce5ff;color:#004085}
+.status-CHIUSA{background:#d4edda;color:#155724}
+.legal{font-size:11px;color:#666;background:#f0f0f0;padding:12px;border-radius:8px;margin-top:18px;line-height:1.4}
+.footer{text-align:center;padding:20px;font-size:11px;color:#888}
+.badge{display:inline-block;background:var(--primary-light);color:var(--primary);padding:6px 10px;border-radius:6px;font-size:12px;margin:2px}
+img.preview{width:100%;max-height:220px;object-fit:cover;border-radius:8px;margin-top:8px}
+</style>
+</head>
+<body>
+<header>
+<div>
+<h1>🏠 CasaComune</h1>
+<div style="font-size:13px;opacity:0.9">Gestione Manutenzioni - Versione COMUNE</div>
+</div>
+<span>V3 FINALE • Legale</span>
+</header>
+
+<div class="tabs">
+<div class="tab active" onclick="showTab('inquilino')">INQUILINO</div>
+<div class="tab" onclick="showTab('comune')">COMUNE</div>
+</div>
+
+<div id="view-inquilino" class="view active">
+<div class="card">
+<h3>Segnala un guasto</h3>
+<p style="font-size:13px;color:#555;margin:6px 0 12px">Compila i campi. La segnalazione sarà inviata all'Ufficio Tecnico del Comune.</p>
+<label>Nome e Cognome *</label>
+<input id="nome" placeholder="Mario Rossi">
+<label>Indirizzo alloggio *</label>
+<input id="indirizzo" placeholder="Via Roma 12, Binasco (MI)">
+<label>Telefono</label>
+<input id="telefono" placeholder="345...">
+<label>Tipo guasto *</label>
+<select id="tipo">
+<option value="">Seleziona...</option>
+<option>Perdita acqua / idraulico</option>
+<option>Elettrico / luce scale</option>
+<option>Riscaldamento / caldaia</option>
+<option>Infissi / porte / finestre</option>
+<option>Muffa / infiltrazioni</option>
+<option>Ascensore</option>
+<option>Altro</option>
+</select>
+<label>Descrizione dettagliata *</label>
+<textarea id="descrizione" placeholder="Descrivi cosa succede, da quando, dove..."></textarea>
+<label>Foto del guasto (consigliata)</label>
+<input type="file" id="foto" accept="image/*">
+<img id="previewFoto" class="preview" style="display:none">
+<button class="primary" onclick="inviaSegnalazione()">INVIA SEGNALAZIONE AL COMUNE</button>
+<div class="legal">
+<strong>Informativa legale:</strong> Questa piattaforma è un mero strumento tecnico di raccolta segnalazioni. L'inoltro, la presa in carico e l'esecuzione degli interventi sono di esclusiva competenza e responsabilità dell'Ente Comunale e dei tecnici incaricati. Non sostituisce i numeri di emergenza. Per guasti gravi (gas, allagamento, pericolo) contattare immediatamente i numeri di emergenza.<br><br>
+Con l'invio acconsenti al trattamento dati GDPR Reg. UE 2016/679 per sole finalità di gestione manutenzione. Titolare: Comune. Server UE.<br><br>
+<a href="#">Privacy Policy</a> • <a href="#">Termini d'uso</a>
+</div>
+</div>
+</div>
+
+<div id="view-comune" class="view">
+<div class="card">
+<h3>Pannello Ufficio Tecnico - Comune</h3>
+<div style="margin:10px 0">
+<span class="badge" id="countAperte">0 Aperte</span>
+<span class="badge" id="countInoltrate">0 Inoltrate</span>
+<span class="badge" id="countChiuse">0 Chiuse</span>
+</div>
+<div style="display:flex;gap:8px;margin-top:12px">
+<input id="filtro" placeholder="Filtra per indirizzo o nome..." oninput="renderLista()">
+<button class="secondary" onclick="esportaCSV()">Esporta CSV</button>
+</div>
+</div>
+<div id="listaSegnalazioni"></div>
+</div>
+
+<div class="footer">CasaComune V3 • SaaS per Comuni • Canone annuale • 2026</div>
+
+<script>
+let segnalazioni = JSON.parse(localStorage.getItem('casacomune_v3')||'[]');
+function showTab(t){
+document.querySelectorAll('.tab').forEach(e=>e.classList.remove('active'));
+document.querySelectorAll('.view').forEach(e=>e.classList.remove('active'));
+if(t==='inquilino'){document.querySelectorAll('.tab')[0].classList.add('active');document.getElementById('view-inquilino').classList.add('active')}
+else{document.querySelectorAll('.tab')[1].classList.add('active');document.getElementById('view-comune').classList.add('active');renderLista()}
+}
+document.getElementById('foto').addEventListener('change', e=>{
+const file=e.target.files[0];if(!file)return;
+const reader=new FileReader();
+reader.onload=ev=>{document.getElementById('previewFoto').src=ev.target.result;document.getElementById('previewFoto').style.display='block';};
+reader.readAsDataURL(file);
+});
+function inviaSegnalazione(){
+const nome=document.getElementById('nome').value.trim();
+const indirizzo=document.getElementById('indirizzo').value.trim();
+const telefono=document.getElementById('telefono').value.trim();
+const tipo=document.getElementById('tipo').value;
+const descrizione=document.getElementById('descrizione').value.trim();
+const fotoEl=document.getElementById('previewFoto');
+if(!nome||!indirizzo||!tipo||!descrizione){alert('Compila tutti i campi obbligatori *');return}
+const nuova={id:Date.now(),data:new Date().toLocaleString('it-IT'),nome,indirizzo,telefono,tipo,descrizione,foto:fotoEl.src||'',stato:'APERTA'};
+segnalazioni.unshift(nuova);
+localStorage.setItem('casacomune_v3',JSON.stringify(segnalazioni));
+alert('Segnalazione inviata al Comune.');
+document.getElementById('nome').value='';document.getElementById('indirizzo').value='';document.getElementById('telefono').value='';document.getElementById('tipo').value='';document.getElementById('descrizione').value='';document.getElementById('foto').value='';fotoEl.style.display='none';
+}
+function renderLista(){
+const filtro=document.getElementById('filtro').value.toLowerCase();
+const container=document.getElementById('listaSegnalazioni');
+container.innerHTML='';let cA=0,cI=0,cC=0;
+segnalazioni.forEach(s=>{
+if(s.stato==='APERTA')cA++;if(s.stato==='INOLTRATA')cI++;if(s.stato==='CHIUSA')cC++;
+if(filtro &&!(s.indirizzo.toLowerCase().includes(filtro)||s.nome.toLowerCase().includes(filtro)))return;
+const div=document.createElement('div');div.className='card';
+div.innerHTML=`<div style="display:flex;justify-content:space-between"><strong>${s.tipo}</strong><span class="status status-${s.stato}">${s.stato}</span></div><div style="font-size:13px;margin:8px 0"><b>${s.nome}</b> - ${s.indirizzo}<br>Tel: ${s.telefono||'n/d'} | ${s.data}</div><div style="font-size:14px;background:#f9f9f9;padding:10px;border-radius:6px">${s.descrizione}</div>${s.foto?`<img src="${s.foto}" class="preview">`:''}<div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap"><button class="secondary" onclick="cambiaStato(${s.id},'INOLTRATA')">Inoltrata</button><button class="secondary" onclick="cambiaStato(${s.id},'CHIUSA')">Chiudi</button><button class="primary" style="background:#25D366" onclick="inoltraWhatsApp(${s.id})">WhatsApp al tecnico</button><button class="secondary" onclick="elimina(${s.id})" style="border-color:red;color:red">Elimina</button></div>`;
+container.appendChild(div);
+});
+document.getElementById('countAperte').textContent=cA+' Aperte';document.getElementById('countInoltrate').textContent=cI+' Inoltrate';document.getElementById('countChiuse').textContent=cC+' Chiuse';
+if(segnalazioni.length===0)container.innerHTML='<div class="card">Nessuna segnalazione. Modalità demo locale. Con Firebase sarà in tempo reale.</div>';
+}
+function cambiaStato(id,nuovo){const s=segnalazioni.find(x=>x.id===id);if(s){s.stato=nuovo;localStorage.setItem('casacomune_v3',JSON.stringify(segnalazioni));renderLista()}}
+function inoltraWhatsApp(id){const s=segnalazioni.find(x=>x.id===id);if(!s)return;const testo=`*CasaComune - ${s.stato}*%0A*Tipo:* ${s.tipo}%0A*Da:* ${s.nome}%0A*Indirizzo:* ${s.indirizzo}%0A*Tel:* ${s.telefono}%0A*Data:* ${s.data}%0A*Desc:* ${s.descrizione}%0A_Piattaforma tecnica - Intervento a cura del Comune_`;window.open(`https://wa.me/?text=${testo}`,'_blank');cambiaStato(id,'INOLTRATA');}
+function elimina(id){if(!confirm('Eliminare?'))return;segnalazioni=segnalazioni.filter(x=>x.id!==id);localStorage.setItem('casacomune_v3',JSON.stringify(segnalazioni));renderLista();}
+function esportaCSV(){let csv='ID,Data,Nome,Indirizzo,Telefono,Tipo,Descrizione,Stato\n';segnalazioni.forEach(s=>{csv+=`${s.id},"${s.data}","${s.nome}","${s.indirizzo}","${s.telefono}","${s.tipo}","${s.descrizione.replace(/"/g,'""')}","${s.stato}"\n`});const blob=new Blob([csv],{type:'text/csv'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='casacomune_segnalazioni.csv';a.click();}
+renderLista();
+</script>
+</body>
+</html>
