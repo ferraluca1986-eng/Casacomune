@@ -3,135 +3,152 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>CasaComune - Demo Binasco</title>
+<title>CasaComune - Comune di Binasco</title>
 <style>
- body{font-family:system-ui; margin:0; background:#f3f4f6; padding:20px}
- .card{background:white; padding:20px; border-radius:12px; max-width:500px; margin:20px auto; box-shadow:0 2px 8px rgba(0,0,0,0.1)}
- button{width:100%; padding:14px; border:none; border-radius:8px; font-weight:bold; cursor:pointer; margin-top:10px}
- .btn-green{background:#16a34a; color:white}
- .btn-blue{background:#2563eb; color:white}
- .btn-gray{background:#e5e7eb}
- input, textarea, select{width:100%; padding:10px; margin:6px 0; border:1px solid #ddd; border-radius:6px; box-sizing:border-box}
- .tab{display:flex; gap:6px; margin-bottom:20px; justify-content:center; flex-wrap:wrap}
- .tab button{width:auto; padding:8px 14px; font-size:14px}
- small{color:#666; font-size:11px; display:block; margin-top:10px; line-height:1.4}
+ body{font-family:system-ui; margin:0; background:#f3f4f6; padding:16px}
+ .card{background:white; padding:18px; border-radius:12px; max-width:520px; margin:16px auto; box-shadow:0 2px 8px rgba(0,0,0,0.08); border:1px solid #e5e7eb}
+ button{padding:12px 14px; border:none; border-radius:8px; font-weight:bold; cursor:pointer; margin-top:8px}
+ .btn-green{background:#16a34a; color:white; width:100%}
+ .btn-blue{background:#2563eb; color:white; width:100%}
+ .btn-whatsapp{background:#25D366; color:white; width:100%}
+ .btn-gray{background:#e5e7eb; color:#111}
+ .btn-small{padding:6px 10px; font-size:13px; width:auto; margin-right:6px}
+ input, textarea, select{width:100%; padding:11px; margin:6px 0; border:1px solid #d1d5db; border-radius:8px; box-sizing:border-box; font-size:15px}
+ .tab{display:flex; gap:6px; margin:12px auto; justify-content:center; flex-wrap:wrap; max-width:520px}
+ small{color:#6b7280; font-size:11.5px; display:block; margin-top:10px; line-height:1.4}
+ .badge{font-size:11px; padding:3px 8px; border-radius:999px; background:#fef3c7; display:inline-block}
+ .item{border:1px solid #eee; padding:12px; margin:10px 0; border-radius:10px}
 </style>
 </head>
 <body>
 
-<h2 style="text-align:center">🏠 CasaComune - Comune di Binasco</h2>
+<h2 style="text-align:center; margin:8px 0">🏠 CasaComune - Comune di Binasco</h2>
+<p style="text-align:center; font-size:13px; color:#666; margin-top:0">Gestione segnalazioni ERP via WhatsApp</p>
 
 <div class="tab">
- <button class="btn-gray" onclick="showTab('inquilino')">Inquilino</button>
- <button class="btn-gray" onclick="showTab('operatore')">Operatore</button>
- <button class="btn-gray" onclick="showTab('dirigente')">Dirigente</button>
- <button class="btn-gray" onclick="showTab('tecnico')">Tecnico</button>
+ <button class="btn-gray btn-small" onclick="showTab('inquilino')">Inquilino</button>
+ <button class="btn-gray btn-small" onclick="showTab('operatore')">Operatore</button>
+ <button class="btn-gray btn-small" onclick="showTab('dirigente')">Dirigente</button>
+ <button class="btn-gray btn-small" onclick="showTab('tecnico')">Tecnico</button>
 </div>
 
 <!-- INQUILINO -->
 <div id="inquilino" class="card">
- <h3>Segnala guasto</h3>
- <input id="nome" placeholder="Nome e Cognome - Scala">
+ <h3 style="margin:0 0 8px">📱 Inquilino - Segnala guasto</h3>
+ <input id="nome" placeholder="Nome, Via, Scala (es. Rossi Via Matteotti 2/B)">
  <select id="tipo">
   <option>Perdita acqua</option>
   <option>Ascensore bloccato</option>
-  <option>Luce scale</option>
-  <option>Porta rotta</option>
+  <option>Luce scale non funziona</option>
+  <option>Porta / Serratura rotta</option>
+  <option>Riscaldamento</option>
+  <option>Altro</option>
  </select>
- <textarea id="desc" placeholder="Descrivi il problema..."></textarea>
- <button class="btn-blue" onclick="inviaSegnalazione()">Invia segnalazione su WhatsApp</button>
- <small>La segnalazione verrà inoltrata all'ufficio tecnico comunale.</small>
+ <textarea id="desc" rows="3" placeholder="Descrivi il problema..."></textarea>
+ <button class="btn-blue" onclick="inviaSegnalazione()">Invia segnalazione</button>
+ <small>La segnalazione arriva all'operatore comunale e verrà inoltrata via WhatsApp al tecnico.</small>
 </div>
 
 <!-- OPERATORE -->
 <div id="operatore" class="card" style="display:none">
- <h3>Operatore Comunale</h3>
+ <h3 style="margin:0 0 8px">🏢 Operatore Comunale</h3>
+ <small style="margin-bottom:10px">Qui ricevi le segnalazioni e le inoltri al tecnico su WhatsApp.</small>
  <div id="listaSegnalazioni"></div>
 </div>
 
 <!-- DIRIGENTE -->
 <div id="dirigente" class="card" style="display:none">
- <h3>Dirigente - Cruscotto</h3>
- <p id="stats"></p>
+ <h3 style="margin:0 0 8px">📊 Dirigente - Cruscotto</h3>
+ <p id="stats" style="font-weight:bold; font-size:14px"></p>
  <div id="listaDirigente"></div>
 </div>
 
 <!-- TECNICO -->
 <div id="tecnico" class="card" style="display:none">
- <h3>Tecnico Esterno</h3>
+ <h3 style="margin:0 0 8px">🔧 Tecnico - Lavori assegnati</h3>
  <div id="listaTecnico"></div>
 </div>
 
-<!-- INSTALLAZIONE -->
+<!-- BOX VENDITA -->
 <div class="card" style="border:2px solid #16a34a">
- <h3 style="margin-top:0">Attivazione per Comuni</h3>
- <p style="font-size:14px">Installazione di prova configurata sul vostro patrimonio ERP. Include formazione operatori e 14gg supporto.</p>
+ <h3 style="margin:0 0 6px">Attivazione per Comuni</h3>
+ <p style="font-size:13px; margin:6px 0">Installazione di prova sul vostro patrimonio ERP. Include configurazione, formazione operatori e 14gg supporto WhatsApp.</p>
  <button class="btn-green" onclick="richiediInstallazione()">Richiedi installazione di prova - 390€ una tantum</button>
  <small>
-  Servizio fornito come prestazione occasionale ex art.67 comma 1 lett.l) TUIR - Operazione fuori campo IVA art.5 DPR 633/72.<br>
-  Importo <5.000€ - Affidamento diretto ex art.50 D.Lgs 36/2023. Split Payment a carico Ente.<br>
-  Nessun abbonamento ricorrente. Nessun vincolo MePA.
+  Servizio fornito come prestazione occasionale ex art.67 c.1 lett.l) TUIR - Operazione fuori campo IVA art.5 DPR 633/72. Importo &lt;5.000€ - Affidamento diretto ex art.50 D.Lgs 36/2023. Split Payment a carico Ente. Nessun abbonamento ricorrente, nessun vincolo MePA.
  </small>
 </div>
 
 <script>
-let segnalazioni = JSON.parse(localStorage.getItem('casacomune')||'[]');
+let segnalazioni = JSON.parse(localStorage.getItem('casacomune_v2')||'[]');
 
 function showTab(t){
- document.querySelectorAll('.card').forEach(c=>{
-  if(c.id) c.style.display='none';
- });
+ document.querySelectorAll('.card').forEach(c=>{ if(c.id) c.style.display='none'; });
  document.getElementById(t).style.display='block';
  if(t!=='inquilino') renderListe();
 }
 function inviaSegnalazione(){
  const s = {
   id: Date.now(),
-  nome: document.getElementById('nome').value||'Anonimo',
+  nome: document.getElementById('nome').value.trim()||'Anonimo',
   tipo: document.getElementById('tipo').value,
-  desc: document.getElementById('desc').value,
-  data: new Date().toLocaleString(),
+  desc: document.getElementById('desc').value.trim(),
+  data: new Date().toLocaleString('it-IT'),
   stato: 'Aperta',
-  tecnico: ''
+  tecnico: '',
+  telTecnico: ''
  };
- segnalazioni.push(s);
- localStorage.setItem('casacomune', JSON.stringify(segnalazioni));
- alert('Segnalazione inviata!');
+ if(!s.desc){ alert('Descrivi il problema'); return; }
+ segnalazioni.unshift(s);
+ localStorage.setItem('casacomune_v2', JSON.stringify(segnalazioni));
+ alert('Segnalazione inviata all\'operatore!');
  document.getElementById('nome').value=''; document.getElementById('desc').value='';
+ renderListe();
+}
+function cardHTML(s, showActions){
+ return `
+ <div class="item">
+  <div><b>${s.tipo}</b> <span class="badge">${s.stato}</span></div>
+  <div style="font-size:13px; margin:4px 0">${s.nome}</div>
+  <div style="font-size:13px; color:#333">${s.desc}</div>
+  <small>${s.data}${s.tecnico?` | Tecnico: ${s.tecnico} (${s.telTecnico})`:''}</small>
+  ${showActions?`
+   <button class="btn-whatsapp" onclick="inoltra(${s.id})">📲 Inoltra al Tecnico via WhatsApp</button>
+   <button class="btn-gray btn-small" style="margin-top:6px" onclick="chiudi(${s.id})">Segna come Chiusa</button>
+  `:''}
+ </div>`;
 }
 function renderListe(){
- const html = segnalazioni.map(s=>`
-  <div style="border:1px solid #eee; padding:10px; margin:8px 0; border-radius:6px">
-   <b>${s.tipo}</b> - ${s.nome}<br>
-   <small>${s.data} - ${s.desc}</small><br>
-   Stato: <b>${s.stato}</b><br>
-   ${s.tecnico?`Tecnico: ${s.tecnico}<br>`:''}
-   <button class="btn-blue" onclick="inoltra(${s.id})">Inoltra al Tecnico</button>
-   <button class="btn-gray" onclick="chiudi(${s.id})">Chiudi</button>
-  </div>
- `).join('') || '<small>Nessuna segnalazione</small>';
- document.getElementById('listaSegnalazioni').innerHTML = html;
- document.getElementById('listaDirigente').innerHTML = html;
- document.getElementById('listaTecnico').innerHTML = segnalazioni.filter(s=>s.stato==='Inoltrata').map(s=>`
-  <div style="border:1px solid #eee; padding:10px; margin:8px 0">${s.tipo} - ${s.nome}<br><small>${s.desc}</small></div>
- `).join('') || '<small>Nessun lavoro assegnato</small>';
- document.getElementById('stats').innerText = `Totale: ${segnalazioni.length} | Aperte: ${segnalazioni.filter(s=>s.stato==='Aperta').length} | Inoltrate: ${segnalazioni.filter(s=>s.stato==='Inoltrata').length}`;
+ const listOpen = segnalazioni.map(s=>cardHTML(s,true)).join('') || '<small>Nessuna segnalazione</small>';
+ const listDir = segnalazioni.map(s=>cardHTML(s,true)).join('') || '<small>Nessuna segnalazione</small>';
+ const listTec = segnalazioni.filter(s=>s.stato==='Inoltrata').map(s=>cardHTML(s,false)).join('') || '<small>Nessun lavoro assegnato</small>';
+ document.getElementById('listaSegnalazioni').innerHTML = listOpen;
+ document.getElementById('listaDirigente').innerHTML = listDir;
+ document.getElementById('listaTecnico').innerHTML = listTec;
+ document.getElementById('stats').innerText = `Totale: ${segnalazioni.length} | Aperte: ${segnalazioni.filter(s=>s.stato==='Aperta').length} | Inoltrate: ${segnalazioni.filter(s=>s.stato==='Inoltrata').length} | Chiuse: ${segnalazioni.filter(s=>s.stato==='Chiusa').length}`;
 }
 function inoltra(id){
- const t = prompt('Nome tecnico o ditta?');
- if(!t) return;
- segnalazioni = segnalazioni.map(s=> s.id===id ? {...s, stato:'Inoltrata', tecnico:t} : s);
- localStorage.setItem('casacomune', JSON.stringify(segnalazioni));
+ const s = segnalazioni.find(x=>x.id===id);
+ let tel = prompt('Numero WhatsApp del TECNICO (es 3451234567):');
+ if(!tel) return;
+ tel = tel.replace(/\D/g,'');
+ if(tel.length < 9){ alert('Numero non valido'); return; }
+ let tecnico = prompt('Nome tecnico/ditta?', s.tecnico||'')||'Tecnico';
+ let msg = `🔧 NUOVA SEGNALAZIONE ERP - ${s.tipo}%0A%0A📍 Inquilino: ${s.nome}%0A📝 Problema: ${s.desc}%0A📅 Data: ${s.data}%0A🏠 Comune: Binasco%0A%0A_Da CasaComune_`;
+ window.open(`https://wa.me/39${tel}?text=${msg}`, '_blank');
+ segnalazioni = segnalazioni.map(x=> x.id===id ? {...x, stato:'Inoltrata', tecnico:tecnico, telTecnico:tel} : x);
+ localStorage.setItem('casacomune_v2', JSON.stringify(segnalazioni));
  renderListe();
 }
 function chiudi(id){
  segnalazioni = segnalazioni.map(s=> s.id===id ? {...s, stato:'Chiusa'} : s);
- localStorage.setItem('casacomune', JSON.stringify(segnalazioni));
+ localStorage.setItem('casacomune_v2', JSON.stringify(segnalazioni));
  renderListe();
 }
 function richiediInstallazione(){
- window.open('https://wa.me/39'+prompt('Inserisci tuo numero WhatsApp per essere ricontattato (es 345...)')+'?text=Ciao%20sono%20interessato%20a%20CasaComune%20installazione%20prova%20390%20una%20tantum','_blank');
- alert('Richiesta pronta! Se non si apre WhatsApp, scrivi a: luca.casa.comune@gmail.com');
+ let tel = prompt('Il tuo numero WhatsApp di riferimento per l\'attivazione? (es 345...)');
+ if(!tel) return;
+ window.open(`https://wa.me/39${tel.replace(/\D/g,'')}?text=Ciao%20sono%20interessato%20a%20CasaComune%20installazione%20prova%20390%20una%20tantum%20-%20Demo:%20https://ferraluca1986-eng.github.io/Casacomune/`,'_blank');
 }
 renderListe();
 </script>
