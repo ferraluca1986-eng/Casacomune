@@ -1,43 +1,52 @@
-# CasaComune - Comune di Binasco
-## Gestione segnalazioni ERP via WhatsApp
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CasaComune - Binasco | Segnalazioni ERP</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>body{font-family:system-ui;padding:20px;max-width:600px;margin:auto} .card{border:1px solid #ddd;padding:15px;border-radius:10px;margin:10px 0} button{background:#0a7d33;color:white;padding:12px 18px;border:0;border-radius:8px;width:100%} </style>
+</head>
+<body>
+<h1>CasaComune - Comune di Binasco</h1>
+<p id="contatori">Caricamento dati reali da database...</p>
 
-Semplifica la comunicazione tra inquilini, uffici comunali e tecnici. Tutto in un'unica piattaforma integrata con WhatsApp.
+<div id="form-inquilino" class="card">
+<h3>🏠 Inquilino - Segnala guasto</h3>
+<select id="tipo"><option>Perdita acqua</option><option>Ascensore bloccato</option><option>Luce scala</option><option>Porta / Serratura</option><option>Riscaldamento</option><option>Altro</option></select>
+<textarea id="desc" placeholder="Descrivi - Via, interno, cosa succede"></textarea>
+<button onclick="inviaSegnalazione()">Invia segnalazione al Comune</button>
+<p style="font-size:11px">Dati salvati in UE (Frankfurt) - GDPR - Informativa art.13 disponibile presso Ufficio Casa</p>
+</div>
 
-### 📱 Inquilino - Segnala guasto
-Seleziona il tipo di guasto e invia la segnalazione direttamente al Comune:
-* Perdita acqua
-* Ascensore bloccato
-* Luce scale non funziona
-* Porta / Serratura rotta
-* Riscaldamento
-* Altro
-[Invia segnalazione al Comune]
+<div id="login-operatore" class="card">
+<h3>🔑 Area Operatore / Dirigente</h3>
+<input id="email" placeholder="email comunale">
+<input id="pass" type="password" placeholder="password">
+<button onclick="login()">Entra</button>
+</div>
 
-### 🏢 Operatore - Da smistare
-Visualizza in tempo reale solo le segnalazioni APERTE e inoltrale al tecnico competente con un click su WhatsApp.
+<script>
+const SUPABASE_URL = "INSERISCI_QUI_URL_DEL_NUOVO_PROGETTO_FRANKFURT";
+const SUPABASE_KEY = "INSERISCI_QUI_ANON_KEY";
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-### 📊 Dirigente - Cruscotto di controllo
-Monitora l'andamento del patrimonio ERP in tempo reale:
-* 0 Totale
-* 0 Aperte
-* 0 Inoltrate
-* 0 Chiuse
-[📄 Esporta report per Giunta]
-*Nota: Il Dirigente non smista le pratiche; supervisiona lo stato dell'arte e procede alla chiusura definitiva.*
-
-### 🔧 Tecnico - Lavori assegnati
-Visualizza la lista degli interventi presi in carico e aggiorna lo stato di avanzamento dei lavori.
-
----
-
-## 🚀 Attivazione per i Comuni
-Vuoi testare il sistema nel tuo Ente? Attiva un'installazione di prova sul patrimonio ERP del tuo Comune.
-La quota include: configurazione iniziale, formazione del personale e 14 giorni di supporto dedicato su WhatsApp.
-
-💰 **390€ una tantum**
-* Prestazione occasionale ex art. 67 c.1 lett. l) TUIR (Fuori campo IVA art. 5 DPR 633/72)
-* Importo inferiore a 5.000€: ideale per Affidamento Diretto ex art. 50 D.Lgs 36/2023
-* Split Payment a carico dell'Ente
-* Nessun abbonamento o costo nascosto
-
-[Richiedi installazione di prova]
+async function caricaContatori(){
+  const {count} = await sb.from('segnalazioni').select('*', {count:'exact', head:true});
+  document.getElementById('contatori').innerText = `Segnalazioni totali nel sistema: ${count ?? 0} - Dati reali`;
+}
+async function inviaSegnalazione(){
+  const tipo = document.getElementById('tipo').value;
+  const desc = document.getElementById('desc').value;
+  if(!desc) return alert('Inserisci via e descrizione');
+  const {error} = await sb.from('segnalazioni').insert({comune_id:'binasco', via:desc, tipo_guasto:tipo, descrizione:desc, stato:'aperta'});
+  if(error) alert(error.message); else { alert('Segnalazione inviata! L\'operatore la vedrà subito.'); caricaContatori(); }
+}
+async function login(){
+  const {error} = await sb.auth.signInWithPassword({email:email.value, password:pass.value});
+  if(error) alert(error.message); else alert('Login ok - ora puoi gestire le pratiche');
+}
+caricaContatori();
+</script>
+</body>
+</html>
